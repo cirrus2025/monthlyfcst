@@ -1,0 +1,6 @@
+# requirements.txt
+streamlit
+geopandas
+matplotlib
+numpy
+shapely
