@@ -1,3 +1,5 @@
+# pages/Temperature_Outlook.py
+
 import streamlit as st
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -7,25 +9,34 @@ from matplotlib import colorbar
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import io
 import warnings
+import os
+
+st.title("🌡️ Temperature Outlook Map Generator")
+st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
+
 
 # --- Ignore harmless warnings ---
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 warnings.filterwarnings("ignore", message="not compatible with tight_layout")
 
+# --- Corrected Shapefile Path ---
+shp_filename = 'Atoll_boundary2016.shp'
+# The data file is located in the 'data' folder at the root of the app structure.
+# Since this script is in the 'pages' folder, we move up one level (..) then into 'data'.
+shp = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', shp_filename)
+# --- End Path Correction ---
+
 # --- Load shapefile ---
-# NOTE: Replace with your actual path if running locally
-# For a deployed app, consider moving the file and adjusting the path
-shp = r"C:\Users\thahumeena.MMS\Desktop\Shape_File\Atoll_boundary2016.shp"
 try:
     gdf = gpd.read_file(shp).to_crs(epsg=4326)
 except Exception as e:
-    st.error(f"Error loading shapefile: {e}. Please check the path and file.")
+    st.error(f"Error loading shapefile: {e}. Please check the path: {shp}")
     st.stop() # Stop the script if the file cannot be loaded
 
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
 
-# --- Default probabilities ---
+# --- Default probabilities (Keep as provided) ---
 default_probs = {
     'Haa Alifu Atoll': 65,
     'Haa Dhaalu Atoll': 70,
@@ -57,9 +68,6 @@ category_colors = {
     "Below Normal": ['#ffffff', '#c8c8ff', '#a6b6ff', '#8798f0', '#6c7be0', '#3c4fc2']
 }
 
-# --- Streamlit Title ---
-st.title("🗺️ Maldivian Atoll Outlook Generator")
-
 # --- Sidebar UI ---
 st.sidebar.header("🎛️ Adjust Atoll Probabilities & Categories")
 custom_title = st.sidebar.text_input(
@@ -83,7 +91,7 @@ for atoll, default in default_probs.items():
 # --- MAP GENERATION LOGIC (Runs on every change) ---
 
 # Map user inputs to GeoDataFrame
-# NOTE: We use .copy() here to avoid SettingWithCopyWarning, though it's often fine after a read_file
+# NOTE: We use .copy() here to avoid SettingWithCopyWarning
 gdf_display = gdf.copy()
 gdf_display['prob'] = gdf_display['Name'].map(user_probs)
 gdf_display['category'] = gdf_display['Name'].map(user_categories)
