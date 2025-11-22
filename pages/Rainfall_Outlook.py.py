@@ -1,3 +1,5 @@
+# pages/Rainfall_Outlook.py
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,19 +9,37 @@ from matplotlib import colorbar
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import streamlit as st
 from io import BytesIO
+import os
 
-# Load shapefile and clip extent
-shp = r'C:\Users\thahumeena.MMS\Desktop\test autheticator\Atoll_boundary2016.shp'
-gdf = gpd.read_file(shp).to_crs(epsg=4326)
-bbox = box(71, -1, 75, 7.5)
-gdf = gdf[gdf.intersects(bbox)]
+st.title("🌧️ Rainfall Outlook Map Generator")
+st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
 
-# ✅ Clean missing or invalid atoll names
-gdf['Name'] = gdf['Name'].fillna("Unknown")
-# or to skip missing ones: gdf = gdf.dropna(subset=['Name'])
+# --- Corrected Shapefile Path ---
+# Assuming 'data' is at the root level, relative path from the pages folder is '../data/...'
+# Use a simple relative path assuming the Streamlit app root is the containing directory.
+# We'll assume the shapefile name is 'Atoll_boundary2016.shp'
+shp_filename = 'Atoll_boundary2016.shp'
+# The data file is located in the 'data' folder at the root of the app structure.
+# Since this script is in the 'pages' folder, we move up one level (..) then into 'data'.
+shp = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', shp_filename)
+# --- End Path Correction ---
 
-# ✅ Ensure unique atoll names
-unique_atolls = sorted(gdf['Name'].unique().tolist())
+try:
+    # Load shapefile and clip extent
+    gdf = gpd.read_file(shp).to_crs(epsg=4326)
+    bbox = box(71, -1, 75, 7.5)
+    gdf = gdf[gdf.intersects(bbox)]
+
+    # ✅ Clean missing or invalid atoll names
+    gdf['Name'] = gdf['Name'].fillna("Unknown")
+
+    # ✅ Ensure unique atoll names
+    unique_atolls = sorted(gdf['Name'].unique().tolist())
+    
+except Exception as e:
+    st.error(f"Error loading map data: {e}. Please ensure '{shp_filename}' is in the `data` folder.")
+    st.stop()
+
 
 # Editable map title (sidebar)
 map_title = st.sidebar.text_input("Edit Map Title:", "Maximum Rainfall Outlook for OND 2025")
@@ -37,8 +57,8 @@ selected_percentages = {}
 
 # Sidebar inputs for each unique atoll
 for i, atoll in enumerate(unique_atolls):
-    selected = st.sidebar.selectbox(f"{atoll} Category", categories, index=1, key=f"{atoll}_cat_{i}")
-    percent = st.sidebar.slider(f"{atoll} %", min_value=0, max_value=100, value=60, step=5, key=f"{atoll}_perc_{i}")
+    selected = st.sidebar.selectbox(f"**{atoll}** Category", categories, index=1, key=f"{atoll}_cat_{i}")
+    percent = st.sidebar.slider(f"**{atoll}** %", min_value=0, max_value=100, value=60, step=5, key=f"{atoll}_perc_{i}")
     
     selected_categories[atoll] = selected
     selected_percentages[atoll] = percent
