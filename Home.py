@@ -11,7 +11,8 @@ st.set_page_config(
 st.title("☀️ Forecasters' Tools Dashboard")
 
 st.markdown("""
-Welcome! Use the **navigation menu on the left** to select a specific forecasting tool.
+Welcome to the Maldives Meteorological Service forecasting dashboard! 
+Please use the **navigation menu on the left** to select and launch a specific climate outlook tool.
 """)
 
 st.markdown("---")
@@ -21,7 +22,7 @@ st.write("### Quick Access Tools:")
 col1, col2 = st.columns(2)
 
 with col1:
-    # These tools are not separate .py files, so they are displayed here
+    # These tools are not separate .py files and are displayed here with status indicators
     if st.button("Alert Graphic"):
         st.info("Alert Graphic Tool: Coming soon!")
     
