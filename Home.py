@@ -3,32 +3,13 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Forecasters' Tools", 
+    page_title="Monthly Outlook Generator", 
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-st.title("☀️ Forecasters' Tools Dashboard")
+st.title("Monthly Outlook Generator")
 
 st.markdown("""
-Welcome to the Maldives Meteorological Service forecasting dashboard! 
-Please use the **navigation menu on the left** to select and launch a specific climate outlook tool.
+Please use the navigation menu on the left to select an Outlook Map.
 """)
-
-st.markdown("---")
-
-st.write("### Quick Access Tools:")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    # These tools are not separate .py files and are displayed here with status indicators
-    if st.button("Alert Graphic"):
-        st.info("Alert Graphic Tool: Coming soon!")
-    
-with col2:
-    if st.button("Weekend Forecast"):
-        st.info("Weekend Forecast Tool: Coming soon!")
-
-st.markdown("---")
-st.caption("Developed by Maldives Meteorological Service")
