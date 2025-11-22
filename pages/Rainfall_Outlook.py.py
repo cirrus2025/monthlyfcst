@@ -14,30 +14,30 @@ import os
 st.title("🌧️ Rainfall Outlook Map Generator")
 st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
 
-# --- Corrected Shapefile Path ---
-# Assuming 'data' is at the root level, relative path from the pages folder is '../data/...'
-# Use a simple relative path assuming the Streamlit app root is the containing directory.
-# We'll assume the shapefile name is 'Atoll_boundary2016.shp'
-shp_filename = 'Atoll_boundary2016.shp'
-# The data file is located in the 'data' folder at the root of the app structure.
-# Since this script is in the 'pages' folder, we move up one level (..) then into 'data'.
-shp = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', shp_filename)
+# --- Corrected Shapefile Path for Streamlit Cloud ---
+# Path relative to the repository root (where the app is run)
+shp = 'data/Atoll_boundary2016.shp' 
+shp_filename = os.path.basename(shp)
 # --- End Path Correction ---
 
 try:
+    if not os.path.exists(shp):
+        st.error(f"Error: Shapefile not found at the expected path: `{shp}`. Please ensure `{shp_filename}` is in the `data` folder.")
+        st.stop()
+
     # Load shapefile and clip extent
     gdf = gpd.read_file(shp).to_crs(epsg=4326)
     bbox = box(71, -1, 75, 7.5)
     gdf = gdf[gdf.intersects(bbox)]
 
-    # ✅ Clean missing or invalid atoll names
+    # Clean missing or invalid atoll names
     gdf['Name'] = gdf['Name'].fillna("Unknown")
 
-    # ✅ Ensure unique atoll names
+    # Ensure unique atoll names
     unique_atolls = sorted(gdf['Name'].unique().tolist())
     
 except Exception as e:
-    st.error(f"Error loading map data: {e}. Please ensure '{shp_filename}' is in the `data` folder.")
+    st.error(f"Error loading map data: {e}. Check libraries (geopandas, fiona, etc.) and shapefile integrity.")
     st.stop()
 
 
@@ -80,7 +80,7 @@ norm = BoundaryNorm(bins, ncolors=len(bins)-1, clip=True)
 tick_positions = [35, 45, 55, 65, 75]
 tick_labels = ['35', '45', '55', '65', '75']
 
-# ✅ Map selections back to gdf (so all parts of same atoll share same values)
+# Map selections back to gdf (so all parts of same atoll share same values)
 gdf['category'] = gdf['Name'].map(selected_categories)
 gdf['prob'] = gdf['Name'].map(selected_percentages)
 
@@ -124,7 +124,7 @@ def make_cb(ax, cmap, title, offset):
     cax.set_title(title, fontsize=10, pad=6)
     cb.ax.tick_params(labelsize=9, pad=2)
 
-# ✅ Rearranged order — Above on top, Normal middle, Below bottom
+# Rearranged order — Above on top, Normal middle, Below bottom
 make_cb(ax, cmap_above, "Above Normal", 2 * spacing)
 make_cb(ax, cmap_normal, "Normal", spacing)
 make_cb(ax, cmap_below, "Below Normal", 0)
