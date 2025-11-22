@@ -19,46 +19,33 @@ st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 warnings.filterwarnings("ignore", message="not compatible with tight_layout")
 
-# --- Corrected Shapefile Path ---
-shp_filename = 'Atoll_boundary2016.shp'
-# The data file is located in the 'data' folder at the root of the app structure.
-# Since this script is in the 'pages' folder, we move up one level (..) then into 'data'.
-shp = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', shp_filename)
+# --- Corrected Shapefile Path for Streamlit Cloud ---
+shp = 'data/Atoll_boundary2016.shp'
+shp_filename = os.path.basename(shp)
 # --- End Path Correction ---
 
 # --- Load shapefile ---
 try:
+    if not os.path.exists(shp):
+        st.error(f"Error: Shapefile not found at the expected path: `{shp}`. Please ensure `{shp_filename}` is in the `data` folder.")
+        st.stop()
+
     gdf = gpd.read_file(shp).to_crs(epsg=4326)
 except Exception as e:
-    st.error(f"Error loading shapefile: {e}. Please check the path: {shp}")
-    st.stop() # Stop the script if the file cannot be loaded
+    st.error(f"Error loading shapefile: {e}. Please check the path and ensure required libraries (like `fiona`) are in `requirements.txt`.")
+    st.stop()
 
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
 
 # --- Default probabilities (Keep as provided) ---
 default_probs = {
-    'Haa Alifu Atoll': 65,
-    'Haa Dhaalu Atoll': 70,
-    'Noonu Atoll': 68,
-    'Baa Atoll': 72,
-    'Lhaviyani Atoll': 65,
-    'Raa Atoll': 68,
-    'Shaviyani Atoll': 70,
-    'Kaafu Atoll': 75,
-    'Alifu Alifu Atoll': 65,
-    'Alifu Dhaalu Atoll': 70,
-    'Vaavu Atoll': 68,
-    'Meemu Atoll': 62,
-    "Male' City": 75,
-    'Faafu Atoll': 50,
-    'Dhaalu Atoll': 52,
-    'Thaa Atoll': 45,
-    'Laamu Atoll': 55,
-    'Gaafu Alifu Atoll': 64,
-    'Gaafu Dhaalu Atoll': 62,
-    'Gnaviyani Atoll': 65,
-    'Seenu Atoll': 75
+    'Haa Alifu Atoll': 65, 'Haa Dhaalu Atoll': 70, 'Noonu Atoll': 68, 'Baa Atoll': 72,
+    'Lhaviyani Atoll': 65, 'Raa Atoll': 68, 'Shaviyani Atoll': 70, 'Kaafu Atoll': 75,
+    'Alifu Alifu Atoll': 65, 'Alifu Dhaalu Atoll': 70, 'Vaavu Atoll': 68, 'Meemu Atoll': 62,
+    "Male' City": 75, 'Faafu Atoll': 50, 'Dhaalu Atoll': 52, 'Thaa Atoll': 45,
+    'Laamu Atoll': 55, 'Gaafu Alifu Atoll': 64, 'Gaafu Dhaalu Atoll': 62, 
+    'Gnaviyani Atoll': 65, 'Seenu Atoll': 75
 }
 
 # --- Colormaps for categories ---
@@ -88,10 +75,7 @@ for atoll, default in default_probs.items():
         key=f"cat_{atoll}"
     )
 
-# --- MAP GENERATION LOGIC (Runs on every change) ---
-
 # Map user inputs to GeoDataFrame
-# NOTE: We use .copy() here to avoid SettingWithCopyWarning
 gdf_display = gdf.copy()
 gdf_display['prob'] = gdf_display['Name'].map(user_probs)
 gdf_display['category'] = gdf_display['Name'].map(user_categories)
@@ -103,7 +87,6 @@ tick_positions = [35, 45, 55, 65, 75]
 tick_labels = ['35', '45', '55', '65', '75']
 
 # --- Plot map ---
-# Use st.spinner for a nice loading indicator
 with st.spinner('Generating map...'):
     fig, ax = plt.subplots(figsize=(10, 8))
 
@@ -134,11 +117,9 @@ with st.spinner('Generating map...'):
     spacing = 0.09
 
     def make_cb(ax, cmap, title, offset):
-        # Create an inset colorbar axis
         cax = inset_axes(ax, width=width, height=height, loc='lower left',
                             bbox_to_anchor=(start_x, start_y + offset, 1, 1),
                             bbox_transform=ax.transAxes, borderpad=0)
-        # Create the colorbar base
         cb = colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, boundaries=bins,
                                     ticks=tick_positions, spacing='uniform', orientation='horizontal')
         cb.set_ticklabels(tick_labels)
