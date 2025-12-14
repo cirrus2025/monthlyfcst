@@ -9,7 +9,7 @@ import streamlit as st
 from io import BytesIO
 import os
 
-# HIDES THE STREAMLIT HEADER/MENU ICONS
+# HIDES THE STREAMLIT HEADER/MENU ICONS (Fixes the original user request)
 hide_streamlit_header_css = """
 <style>
 .stApp header {
@@ -25,7 +25,8 @@ st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
 
 # --- Corrected Shapefile Path for Streamlit Cloud ---
 # Path relative to the repository root (where the app is run)
-shp = 'data/Atoll_boundary2016.shp' 
+# NOTE: The character after the quote mark (') here is a standard space.
+shp = 'data/Atoll_boundary2016.shp' 
 shp_filename = os.path.basename(shp)
 # --- End Path Correction ---
 
