@@ -320,8 +320,6 @@ HTML_GENERATOR = f"""
         text-align: center; 
     }}
     
-    /* REMOVED: .english-header-date and .dhivehi-header-date styles as the elements are removed from HTML */
-
     /* Sharper Divider Line */
     .forecast-item {{ 
         margin-bottom: 0px; 
@@ -533,7 +531,7 @@ HTML_GENERATOR = f"""
             
             <div class="section-top-header dhivehi-block-header">
                 <h2 class="dhivehi-header-title" id="dv-header-title"></h2>
-                </div>
+            </div>
             
             <div class="advisory-section red-advisory-style" id="adv-dv-section">
                 <div class="advisory-dv" id="adv-dv-container"></div>
@@ -549,7 +547,7 @@ HTML_GENERATOR = f"""
             <div class="en-content-wrapper"> 
                 <div class="section-top-header english-block-header">
                     <h2 class="english-header-title" id="en-header-title"></h2>
-                    </div>
+                </div>
 
                 <div class="advisory-section red-advisory-style" id="adv-en-section">
                     <div class="advisory-en" id="adv-en-container"></div>
@@ -699,9 +697,7 @@ HTML_GENERATOR = f"""
         
         // Removed Date/Time logic as per request
         document.getElementById('dv-header-title').textContent = dvHeader;
-        // document.getElementById('dv-header-date').textContent = ""; // Date element removed
         document.getElementById('en-header-title').textContent = enHeader;
-        // document.getElementById('en-header-date').textContent = ""; // Date element removed
 
         // Use the new updateForecastItem function with icons/dividers
         updateForecastItem('en', 'adv', 'Advisory', document.getElementById('adv-en').value);
@@ -788,3 +784,13 @@ HTML_GENERATOR = f"""
 </script>
 </body>
 </html>
+"""
+
+# --- 3. STREAMLIT RENDERING ---
+
+# Render the entire HTML/CSS/JS generator
+components.html(
+    HTML_GENERATOR,
+    height=1600,
+    scrolling=True
+)
