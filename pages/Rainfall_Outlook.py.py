@@ -9,8 +9,7 @@ import streamlit as st
 from io import BytesIO
 import os
 
-# --- CRITICAL FIX: Simplified CSS Injection to Avoid Hidden Character Issues ---
-# Using a single-line string to reduce the chance of hidden character errors
+# HIDES THE STREAMLIT HEADER/MENU ICONS
 hide_streamlit_header_css = """
 <style>
 .stApp header {
@@ -19,7 +18,6 @@ hide_streamlit_header_css = """
 </style>
 """
 st.markdown(hide_streamlit_header_css, unsafe_allow_html=True)
-# -----------------------------------------------------------------------------
 
 
 st.title("🌧️ Rainfall Outlook Map Generator")
