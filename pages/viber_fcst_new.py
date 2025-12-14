@@ -224,7 +224,7 @@ HTML_GENERATOR = f"""
         border-radius: 8px; 
         /* FIXED: Remove margins and set padding to 1px vertically to extend the bar width */
         margin: 5px 0 5px 0; 
-        padding: 1px 15px; /* CRITICAL FIX: Add horizontal padding here to provide space for the icon */
+        padding: 1px 15px; 
         display: none; 
         overflow: hidden; 
     }}
@@ -298,20 +298,20 @@ HTML_GENERATOR = f"""
         background-color: #e0f2f7; 
         margin-top: 0; 
         border-radius: 0 12px 0 0; 
-        padding: 5px 10px 5px 0 !important; /* Adjusted padding for alignment */
-        align-items: flex-end; /* CRITICAL: Align contents to the right */
+        padding: 5px 10px 5px 0 !important; 
+        align-items: flex-end; 
     }}
     
     .dhivehi-header-title {{
         font-size: 1.7em; color: #004d99; margin: 0; direction: rtl;
         font-family: 'Faruma', Arial, sans-serif; 
-        text-align: right; /* Explicitly set alignment */
+        text-align: right; /* CRITICAL FIX: Ensure text is aligned right */
     }}
 
     .dhivehi-header-date {{
         font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; direction: rtl;
         font-family: 'Faruma', Arial, sans-serif; 
-        text-align: right; /* Explicitly set alignment */
+        text-align: right; /* CRITICAL FIX: Ensure text is aligned right */
     }}
 
     /* ENGLISH HEADER ALIGNMENT (LTR - Align Left) */
@@ -319,19 +319,19 @@ HTML_GENERATOR = f"""
         border-bottom: 4px solid #004d99; 
         margin-top: 5px; 
         background-color: #e0f2f7; 
-        padding: 5px 0 5px 10px !important; /* Adjusted padding for alignment */
+        padding: 5px 0 5px 10px !important; 
         border-radius: 0; 
-        align-items: flex-start; /* CRITICAL: Align contents to the left */
+        align-items: flex-start; 
     }}
 
     .english-header-title {{
         font-size: 1.5em; color: #004d99; font-weight: bold; margin: 0; letter-spacing: 1px;
-        text-align: left; /* Explicitly set alignment */
+        text-align: left; /* CRITICAL FIX: Ensure text is aligned left */
     }}
     
     .english-header-date {{ 
         font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; 
-        text-align: left; /* Explicitly set alignment */
+        text-align: left; /* CRITICAL FIX: Ensure text is aligned left */
     }}
 
     /* Sharper Divider Line */
