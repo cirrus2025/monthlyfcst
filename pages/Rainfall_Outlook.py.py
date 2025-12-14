@@ -9,17 +9,19 @@ import streamlit as st
 from io import BytesIO
 import os
 
-# --- NEW: Inject CSS to hide the top-right menu/editing tools ---
+# --- FIX: Inject CSS to hide the top-right menu/editing tools ---
 # This CSS targets the element containing the toolbar and sets its display to 'none'.
 st.markdown("""
 <style>
 /* Targets the main container of the toolbar */
 .stApp header {
-    display: none !important;
+    display: none;
 }
 
-/* Optional: Hides the 'Made with Streamlit' footer if needed */
-/* footer { visibility: hidden; } */
+/* You can also hide the menu button (three dots) on the top right */
+/* .css-1dp5vir {
+    display: none !important;
+} */
 </style>
 """, unsafe_allow_html=True)
 # -----------------------------------------------------------------
