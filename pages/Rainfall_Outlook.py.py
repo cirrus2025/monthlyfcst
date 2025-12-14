@@ -9,22 +9,17 @@ import streamlit as st
 from io import BytesIO
 import os
 
-# --- FIX: Inject CSS to hide the top-right menu/editing tools ---
-# This CSS targets the element containing the toolbar and sets its display to 'none'.
-st.markdown("""
+# --- CRITICAL FIX: Simplified CSS Injection to Avoid Hidden Character Issues ---
+# Using a single-line string to reduce the chance of hidden character errors
+hide_streamlit_header_css = """
 <style>
-/* Targets the main container of the toolbar */
 .stApp header {
     display: none;
 }
-
-/* You can also hide the menu button (three dots) on the top right */
-/* .css-1dp5vir {
-    display: none !important;
-} */
 </style>
-""", unsafe_allow_html=True)
-# -----------------------------------------------------------------
+"""
+st.markdown(hide_streamlit_header_css, unsafe_allow_html=True)
+# -----------------------------------------------------------------------------
 
 
 st.title("🌧️ Rainfall Outlook Map Generator")
