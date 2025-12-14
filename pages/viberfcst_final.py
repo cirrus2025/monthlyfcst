@@ -6,7 +6,7 @@ import os
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 
 # ✅ FIX: Updated to the user-uploaded file name for the Emblem
-EMBLEM_FILE_PATH = "image_c17197.png"
+EMBLEM_FILE_PATH = "emblem.png"
 
 # ⚠️ WARNING: This file is still missing. We will use a placeholder if not found.
 MAP_FILE_PATH = "maldives_map.jpg"
@@ -730,3 +730,4 @@ components.html(
     height=1600,
     scrolling=True
 )
+
