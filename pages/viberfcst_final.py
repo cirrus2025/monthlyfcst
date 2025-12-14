@@ -4,29 +4,21 @@ import base64
 import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
-# ⚠️ IMPORTANT: These paths assume all files are in the same folder as this Python script.
+# CRITICAL FIX: Setting the base directory for assets as per your GitHub structure image.
 ASSET_DIR = "pages"
 
 EMBLEM_FILE_PATH = os.path.join(ASSET_DIR, "emblem.png")
 MAP_FILE_PATH = os.path.join(ASSET_DIR, "maldives_map.jpg")
 
-# --- ICON ASSETS ---
-# NOTE: Using the file paths provided in your prompt.
+# --- FONT PATHS (Corrected to use ASSET_DIR) ---
+FARUMA_FONT = os.path.join(ASSET_DIR, "Faruma.ttf") 
+MVLHOHI_FONT = os.path.join(ASSET_DIR, "Mvlhohi bold.ttf")
+
+# --- ICON ASSETS (Corrected to use ASSET_DIR) ---
 VIBER_ICON_PATH = os.path.join(ASSET_DIR, "viber.jpg")
-X_ICON_PATH = os.path.join(ASSET_DIR, "x.jpg") 
+X_ICON_PATH = os.path.join(ASSET_DIR, "x.jpg")
 FACEBOOK_ICON_PATH = os.path.join(ASSET_DIR, "fb.jpg")
 
-# --- FONT PATHS (You had these pointing to the main folder, let's assume they are still local) ---
-# NOTE: If these fonts are in the 'pages/' directory, update the paths below. 
-# Based on your previous code, they seem to be in the same folder as the script, but ASSET_DIR is 'pages'.
-# Let's use the explicit names and handle the conversion.
-
-FARUMA_FONT = "Faruma.ttf" 
-MVLHOHI_FONT = "Mvlhohi bold.ttf"
-
-# Combining all social icons into a single image path for the right-side element
-# IMPORTANT: Since your provided HTML snippet was only using one image for the footer-right, 
-# I am re-adding the original three icons like the previous version, but ensuring alignment.
 
 def get_asset_base64_uri(path):
     """Converts a local file (image or font) to a Base64 Data URI."""
@@ -35,23 +27,14 @@ def get_asset_base64_uri(path):
     MISSING_IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
 
     if not os.path.exists(path):
-        # We need to check both the root path and the ASSET_DIR path for the fonts based on your mixed usage
-        if not os.path.exists(os.path.join(ASSET_DIR, path)) and path.endswith(('.ttf', '.otf')):
-             st.error(f"❌ Error: Font file not found at root path: **{path}**")
-             return None
-        elif not os.path.exists(path):
-             st.error(f"❌ Error: Required file not found at path: **{path}**")
-             if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                 return MISSING_IMAGE_PLACEHOLDER
-             return None
+        # NOTE: With the above fixes, this check should ideally pass if the file structure is pages/file.ext
+        st.error(f"❌ Error: Required file not found at path: **{path}**")
+        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            return MISSING_IMAGE_PLACEHOLDER
+        return None
 
     try:
-        # Use the path directly if found, otherwise assume it's in ASSET_DIR for fonts if it's not a root path
-        effective_path = path
-        if not os.path.exists(path) and path.endswith(('.ttf', '.otf')):
-            effective_path = os.path.join(ASSET_DIR, path)
-
-        with open(effective_path, "rb") as file:
+        with open(path, "rb") as file:
             encoded_string = base64.b64encode(file.read()).decode()
             if path.lower().endswith(('.png', '.gif', '.webp')):
                 mime_type = 'image/png' 
@@ -141,7 +124,6 @@ mvlhohi_font_css = f"""
 
 # --- 2. EMBEDDED HTML/CSS/JS GENERATOR ---
 
-# Define the massive HTML/CSS/JS block using f-string and triple quotes
 HTML_GENERATOR = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -170,7 +152,7 @@ HTML_GENERATOR = f"""
     {faruma_font_css}
     {mvlhohi_font_css}
 
-    /* --- EDITOR STYLES (Kept for completeness but not relevant to the fix) --- */
+    /* --- EDITOR STYLES (Omitted for brevity, kept same as original) --- */
     .editor-container {{
         width: 100%;
         max-width: 650px; 
@@ -334,12 +316,12 @@ HTML_GENERATOR = f"""
 
 
     /* ========================================
-    *** FOOTER STYLES (FIXED ALIGNMENT) ***
+    *** FOOTER STYLES (FIXED ALIGNMENT & SIZE) ***
     ======================================== */
     .footer {{
         width: 100%; 
         display: flex; 
-        align-items: center; /* <<< KEY FIX: Vertically centers content in the footer flex container */
+        align-items: center; 
         justify-content: space-between; 
         padding: 10px 15px 10px 15px; 
         background-color: #e0f2f7; 
@@ -351,16 +333,26 @@ HTML_GENERATOR = f"""
     }}
     
     .footer-left {{ 
-        flex: 0 0 0px; 
-        width: 0; 
-        padding: 0;
-        margin: 0;
-        visibility: hidden; 
+        /* Match the map column space */
+        flex: 0 0 130px; 
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        /* Re-adding the left text as seen in your full image preview, this must be in the footer-left */
     }}
 
+    .footer-left span {{
+        font-weight: bold; 
+        color: #004d99; 
+        font-size: 12px; 
+        white-space: nowrap; 
+        line-height: 20px; /* Match the height of the icons/emblem roughly */
+    }}
+    
+    /* Center container is no longer needed, we split the content into left and right, but keeping it for the emblem */
     .footer-center {{
         display: flex;
-        align-items: center; /* <<< KEY FIX: Vertically centers elements inside the center block */
+        align-items: center; 
         justify-content: center; 
         flex-grow: 1; 
         gap: 8px; 
@@ -368,46 +360,43 @@ HTML_GENERATOR = f"""
     .footer-center img {{ 
         height: 28px; 
         width: auto; 
-        /* Added vertical alignment nudge for images if needed, but flex center should handle it */
         vertical-align: middle; 
-    }}
-    .footer-center span {{
-        font-weight: bold; 
-        color: #004d99; 
-        font-size: 12px; 
-        white-space: nowrap; 
-        /* Added baseline/vertical-align property to help text center with images */
-        line-height: 28px; /* Match the height of the icons/emblem roughly */
-    }}
-    .footer-center .dhivehi-text-right {{
-        font-family: 'Faruma', Arial, sans-serif; 
-        direction: rtl; 
-        text-align: right;
     }}
     
     .footer-right {{
         flex-grow: 0; 
         display: flex; 
-        align-items: center; /* <<< KEY FIX: Vertically centers icons in the right block */
+        align-items: center; 
         justify-content: flex-end; 
-        gap: 4px; /* Space between the social icons */
+        gap: 4px; 
         padding-right: 0; 
     }}
 
-    /* Styling for the social icon images */
-    .social-icons img {{
-        width: 20px; /* Size of the icons */
-        height: 20px;
-        transition: opacity 0.2s ease;
-        vertical-align: middle; /* Ensure the image itself is vertically aligned */
-    }}
-    .icon-link {{
-        display: flex; /* Treat link as flex item to center the image if needed */
+    /* **FIXED** Icon Size Styling */
+    .social-icon-wrapper {{
+        /* FIX 1: Using a wrapper to ensure vertical centering */
+        display: flex;
         align-items: center;
-        height: 28px; /* Give it the same height budget as the emblem for alignment consistency */
+        height: 28px; /* Consistent height budget */
     }}
-    .icon-link:hover img {{ 
-        opacity: 0.8; 
+    .social-icon-wrapper img {{
+        /* FIX 2: Reduced size to 20px for the final icons */
+        width: 20px; 
+        height: 20px;
+        object-fit: contain;
+    }}
+
+    .footer-text {{
+        font-weight: bold; 
+        color: #004d99; 
+        font-size: 12px; 
+        white-space: nowrap; 
+        line-height: 20px;
+    }}
+    .footer-text.dhivehi-text-right {{
+        font-family: 'Faruma', Arial, sans-serif; 
+        direction: rtl; 
+        text-align: right;
     }}
 
 </style>
@@ -419,7 +408,7 @@ HTML_GENERATOR = f"""
     <div class="datetime-group">
         <div class="input-item">
             <label for="date-input">Date</label>
-            <input type="date" id="date-input" value="2025-11-10" onchange="updatePost()">
+            <input type="date" id="date-input" value="2025-12-14" onchange="updatePost()">
         </div>
         <div class="input-item">
             <label for="time-select">Valid Until Time (hrs)</label>
@@ -470,7 +459,7 @@ HTML_GENERATOR = f"""
     </div>
     <div class="input-group">
         <label for="wave-en">Wave Height (English)</label>
-        <textarea id="wave-en" class="forecast-textarea" oninput="updatePost()">: 4–7 feet.</textarea>
+        <textarea id="wave-en" class="forecast-textarea" oninput="updatePost()"> 4–7 feet.</textarea>
     </div>
     <div class="input-group">
         <label for="wave-dv">Wave Height (Dhivehi)</label>
@@ -528,31 +517,33 @@ HTML_GENERATOR = f"""
         
         <footer class="footer">
             
-            <div class="footer-left"></div>
+            <div class="footer-left">
+                <span class="footer-text">Maldives Meteorological Service</span>
+            </div>
 
             <div class="footer-center">
-                <span>Maldives Meteorological Service</span> 
                 <img src="{EMBLEM_IMAGE_DATA_URI}" alt="Maldives Emblem" crossorigin="anonymous">
-                <span class="dhivehi-text-right">މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް</span>
+                
+                <span class="footer-text dhivehi-text-right">މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް</span>
             </div>
 
             <div class="footer-right">
-                <a href="#" target="_blank" class="icon-link" title="Viber">
+                <div class="social-icon-wrapper">
                     <img src="{VIBER_ICON_URI}" alt="Viber" crossorigin="anonymous">
-                </a>
-                <a href="#" target="_blank" class="icon-link" title="X (Twitter)">
+                </div>
+                <div class="social-icon-wrapper">
                     <img src="{X_ICON_URI}" alt="X" crossorigin="anonymous">
-                </a>
-                <a href="#" target="_blank" class="icon-link" title="Facebook">
+                </div>
+                <div class="social-icon-wrapper">
                     <img src="{FACEBOOK_ICON_URI}" alt="Facebook" crossorigin="anonymous">
-                </a>
+                </div>
             </div>
         </footer>
     </div>
 </div>
 
 <script>
-    // Dhivehi Month Names (Standard)
+    // JS functions remain the same
     const dhivehiMonths = [
         "ޖެނުއަރީ", "ފެބުރުއަރީ", "މާރިޗު", "އެޕްރީލް", "މޭ", "ޖޫން",
         "ޖުލައި", "އޮގަސްޓު", "ސެޕްޓެމްބަރު", "އޮކްޓޯބަރު", "ނޮވެމްބަރު", "ޑިސެމްބަރު"
