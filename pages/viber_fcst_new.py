@@ -224,7 +224,7 @@ HTML_GENERATOR = f"""
         border-radius: 8px; 
         /* FIXED: Remove margins and set padding to 1px vertically to extend the bar width */
         margin: 5px 0 5px 0; 
-        padding: 1px 0; /* Remove internal padding on the bar itself */
+        padding: 1px 15px; /* CRITICAL FIX: Add horizontal padding here to provide space for the icon */
         display: none; 
         overflow: hidden; 
     }}
@@ -249,8 +249,8 @@ HTML_GENERATOR = f"""
         line-height: 1.4em;
         display: block; 
         width: 100%;
-        /* ADDED: Internal padding to align with the rest of the text content */
-        padding: 0 10px 0 15px; 
+        /* REMOVED: Internal padding that conflicts with the section padding */
+        padding: 0;
     }}
     
     .advisory-en p {{ 
