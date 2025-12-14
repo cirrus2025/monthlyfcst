@@ -338,16 +338,19 @@ HTML_GENERATOR = f"""
     }}
     .footer-center img {{ height: 28px; width: auto; }}
     
+    /* MODIFIED: Right footer content is now just the text, aligned right */
     .footer-right {{
-        display: flex; align-items: center; gap: 10px;
-        font-family: 'Faruma', Arial, sans-serif; color: #004d99; 
-        white-space: nowrap; font-size: 13px; padding-right: 0; 
-        justify-content: flex-end;
+        display: flex; 
+        align-items: center; 
+        font-family: 'Faruma', Arial, sans-serif; 
+        color: #004d99; 
+        white-space: nowrap; 
+        font-size: 13px; 
+        padding-right: 0; 
+        justify-content: flex-end; /* Push content to the right edge */
+        flex-grow: 1; /* Allow it to take up available space */
     }}
 
-    .social-icons {{ display: flex; gap: 4px; }}
-    .social-icons svg {{ width: 18px; height: 18px; transition: transform 0.2s ease, opacity 0.2s ease; cursor: pointer; }}
-    .icon-link:hover svg {{ transform: scale(1.2); opacity: 0.8; }}
 </style>
 </head>
 <body>
@@ -475,25 +478,6 @@ HTML_GENERATOR = f"""
 
             <div class="footer-right">
                 މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް
-                <div class="social-icons">
-                    <a href="https://www.viber.com" target="_blank" class="icon-link" title="Viber">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-                            <rect width="240" height="240" rx="48" ry="48" fill="#7360f2"/>
-                            <path fill="#fff" d="M168 155c-7-7-43-31-50-35s-11-5-18 2-21 26-27 31-10 7-18 3-36-14-68-43S-47 71-53 63-55 49-49 44s14-13 20-19 2-12-2-18S-61-5-67-12s-9-7-15-7-14 0-22 11S-133 5-133 40s33 75 38 80 64 95 153 134c55 25 78 27 95 24s47-21 53-33 6-20 6-23-2-3-8-10z" transform="translate(132 60) scale(0.55)"/>
-                            <path fill="#fff" d="M141.7 86.2c-2.5 0-4.5 2-4.5 4.5s2 4.5 4.5 4.5c12.9 0 23.4 10.5 23.4 23.4 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c.1-17.8-14.5-32.4-32.4-32.4zm.6-22.7c-2.5 0-4.5 2-4.5 4.5s2 4.5 4.5 4.5c25.5 0 46.3 20.8 46.3 46.3 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-30.5-24.8-55.3-55.3-55.3zm-3.3-22.5c-2.5 0-4.5 2-4.5 4.5s2 4.5 4.5 4.5c37.8 0 68.6 30.8 68.6 68.6 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c.1-42.7-34.8-77.6-77.6-77.6z"/>
-                        </svg>
-                    </a>
-                    <a href="https://x.com/" target="_blank" class="icon-link" title="X (Twitter)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path fill="#000000" d="M18.244 2.25h3.308l-7.227 8.26L22 21.75h-5.956l-4.67-6.104L6.06 21.75H2.75l7.73-8.839L2 2.25h6.056l4.215 5.624L18.244 2.25zM17.208 19.59h1.833L7.08 4.33H5.12l12.088 15.26z"/>
-                        </svg>
-                    </a>
-                    <a href="https://facebook.com/" target="_blank" class="icon-link" title="Facebook">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                            <path fill="#1877F2" d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 128.5 94.1 235.1 216 253.4V330h-65v-74h65v-56.4c0-64.4 38.3-100 96.8-100 28.1 0 57.6 5 57.6 5v63h-32.4c-31.9 0-41.9 19.8-41.9 40v48.4h71l-11.3 74h-59.7v179.4C417.9 491.1 512 384.5 512 256z"/>
-                        </svg>
-                    </a>
-                </div>
             </div>
         </footer>
     </div>
@@ -545,7 +529,7 @@ HTML_GENERATOR = f"""
             }} else if (lang === 'dv') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
                 let dvHeadingText;
-                if (id === 'adv') dvHeadingText = ' ސަމާލު:'
+                if (id === 'adv') dvHeadingText = ' އިރުޝާދު:'
                 else if (id === 'wx') dvHeadingText = 'މޫސުން:'
                 else if (id === 'wind') dvHeadingText = 'ވައި: '
                 else if (id === 'sea') dvHeadingText = 'ކަނޑު:'
@@ -727,4 +711,3 @@ components.html(
     height=1600,
     scrolling=True
 )
-
