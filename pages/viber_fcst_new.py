@@ -218,11 +218,13 @@ HTML_GENERATOR = f"""
         flex-direction: column; 
     }}
 
-    /* --- Advisory section --- */
+    /* --- Advisory section (The Red Bar) --- */
     .advisory-section {{
         background-color: #fffde7; 
         border-radius: 8px; 
-        margin: 5px 10px 5px 25px; 
+        /* UPDATED: Decreased horizontal margin from 25px (sum of 10+15) to 15px (sum of 5+10) on the right */
+        /* Changed margin: 5px 10px 5px 25px; to */
+        margin: 5px 10px 5px 20px; /* Reduced the space on the right side next to the map */
         padding: 5px 15px; 
         display: none; 
         overflow: hidden; 
@@ -302,11 +304,11 @@ HTML_GENERATOR = f"""
     
     .english-header-date {{ font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; }}
     
-    /* 🌟 NEW STYLES: Add divider line and padding to forecast items */
+    /* 🌟 UPDATED: Sharper Divider Line */
     .forecast-item {{ 
         margin-bottom: 0px; 
         padding: 4px 0;
-        border-bottom: 1px solid #e0e0e0; /* Light gray line */
+        border-bottom: 1px solid #c0c0c0; /* CHANGED: Sharper grey line */
     }}
 
     /* Remove border from the last item in each section */
@@ -319,16 +321,16 @@ HTML_GENERATOR = f"""
         font-size: 0.95em; 
         line-height: 1.4; 
         margin: 0; 
-        display: flex; /* Enable flex for icon/text alignment */
+        display: flex; 
         align-items: center;
     }}
     
     .icon {{
-        font-size: 1.2em; /* Slightly larger icon */
+        font-size: 1.2em; 
         margin-right: 5px; 
-        color: #004d99; /* Blue color for icon */
+        color: #004d99; 
         flex-shrink: 0;
-        width: 1.2em; /* Ensure consistent width for icons */
+        width: 1.2em; 
         text-align: center;
     }}
 
@@ -337,7 +339,7 @@ HTML_GENERATOR = f"""
     .dhivehi-section .forecast-line {{
         text-align: right; direction: rtl; font-family: 'Faruma', Arial, sans-serif; 
         padding: 0 0 0 10px;
-        flex-direction: row-reverse; /* Icons on the right for Dhivehi */
+        flex-direction: row-reverse; 
         justify-content: flex-end;
     }}
     .dhivehi-section .icon {{ 
@@ -581,9 +583,9 @@ HTML_GENERATOR = f"""
     // Icon Mappings (Using Unicode characters for simplicity and compatibility)
     const iconMap = {{
         'wx': '☁', // Cloud
-        'wind': '🌬', // Wind Face (or ☴ for basic wind lines)
+        'wind': '🌬', // Wind Face 
         'sea': '🌊', // Water Wave
-        'wave': '&#127775;', // Sparkles (or 🌊 again)
+        'wave': '&#127775;', // Sparkles 
         'adv': '⚠️', // Warning
     }};
 
