@@ -744,7 +744,7 @@ HTML_GENERATOR = f"""
 
 # --- 3. STREAMLIT RENDERING ---
 
-st.markdown("<h2 style='text-align:center; color: #004d99;'>📱 Viber / Social Media Post Generator</h2>", unsafe_allow_html=True)
+# st.markdown("<h2 style='text-align:center; color: #004d99;'>📱 Viber / Social Media Post Generator</h2>", unsafe_allow_html=True) <-- THIS LINE IS REMOVED
 
 # Render the entire HTML/CSS/JS generator
 components.html(
