@@ -4,37 +4,54 @@ import base64
 import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
-
-# Assets are assumed to be in the 'pages/' subdirectory based on your structure.
+# ⚠️ IMPORTANT: These paths assume all files are in the same folder as this Python script.
 ASSET_DIR = "pages"
 
 EMBLEM_FILE_PATH = os.path.join(ASSET_DIR, "emblem.png")
 MAP_FILE_PATH = os.path.join(ASSET_DIR, "maldives_map.jpg")
-FARUMA_FONT = os.path.join(ASSET_DIR, "Faruma.ttf")
-MVLHOHI_FONT = os.path.join(ASSET_DIR, "Mvlhohi bold.ttf")
 
-# --- NEW ICON ASSETS ---
-# NOTE: Please ensure these exact files are in your 'pages/' directory.
+# --- ICON ASSETS ---
+# NOTE: Using the file paths provided in your prompt.
 VIBER_ICON_PATH = os.path.join(ASSET_DIR, "viber.jpg")
 X_ICON_PATH = os.path.join(ASSET_DIR, "x.jpg") 
 FACEBOOK_ICON_PATH = os.path.join(ASSET_DIR, "fb.jpg")
 
+# --- FONT PATHS (You had these pointing to the main folder, let's assume they are still local) ---
+# NOTE: If these fonts are in the 'pages/' directory, update the paths below. 
+# Based on your previous code, they seem to be in the same folder as the script, but ASSET_DIR is 'pages'.
+# Let's use the explicit names and handle the conversion.
+
+FARUMA_FONT = "Faruma.ttf" 
+MVLHOHI_FONT = "Mvlhohi bold.ttf"
+
+# Combining all social icons into a single image path for the right-side element
+# IMPORTANT: Since your provided HTML snippet was only using one image for the footer-right, 
+# I am re-adding the original three icons like the previous version, but ensuring alignment.
 
 def get_asset_base64_uri(path):
-    """Converts a local file (image or font) to a Base64 Data URI or returns a placeholder/None if missing."""
+    """Converts a local file (image or font) to a Base64 Data URI."""
     
     # Placeholder for missing image files (small grey square)
     MISSING_IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
-    
+
     if not os.path.exists(path):
-        st.error(f"❌ Error: Required file not found at path: **{path}**")
-        
-        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            return MISSING_IMAGE_PLACEHOLDER
-        return None
+        # We need to check both the root path and the ASSET_DIR path for the fonts based on your mixed usage
+        if not os.path.exists(os.path.join(ASSET_DIR, path)) and path.endswith(('.ttf', '.otf')):
+             st.error(f"❌ Error: Font file not found at root path: **{path}**")
+             return None
+        elif not os.path.exists(path):
+             st.error(f"❌ Error: Required file not found at path: **{path}**")
+             if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                 return MISSING_IMAGE_PLACEHOLDER
+             return None
 
     try:
-        with open(path, "rb") as file:
+        # Use the path directly if found, otherwise assume it's in ASSET_DIR for fonts if it's not a root path
+        effective_path = path
+        if not os.path.exists(path) and path.endswith(('.ttf', '.otf')):
+            effective_path = os.path.join(ASSET_DIR, path)
+
+        with open(effective_path, "rb") as file:
             encoded_string = base64.b64encode(file.read()).decode()
             if path.lower().endswith(('.png', '.gif', '.webp')):
                 mime_type = 'image/png' 
@@ -47,39 +64,21 @@ def get_asset_base64_uri(path):
             return f"data:{mime_type};base64,{encoded_string}"
     except Exception as e:
         st.error(f"❌ Error reading or encoding file **{path}**: {e}")
-        return MISSING_IMAGE_PLACEHOLDER
+        return MISSING_IMAGE_PLACEHOLDER if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')) else None
 
 
 # Convert all assets to Base64
 MAP_IMAGE_DATA_URI = get_asset_base64_uri(MAP_FILE_PATH)
 EMBLEM_IMAGE_DATA_URI = get_asset_base64_uri(EMBLEM_FILE_PATH)
-FARUMA_FONT_URI = get_asset_base64_uri(FARUMA_FONT)
-MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
 # Convert NEW icons to Base64
 VIBER_ICON_URI = get_asset_base64_uri(VIBER_ICON_PATH)
 X_ICON_URI = get_asset_base64_uri(X_ICON_PATH)
 FACEBOOK_ICON_URI = get_asset_base64_uri(FACEBOOK_ICON_PATH)
 
-
-# --- Check for critical asset errors before rendering HTML ---
-MISSING_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
-
-if EMBLEM_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found.")
-     
-if MAP_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found.")
-    
-if FARUMA_FONT_URI is None:
-    st.warning(f"⚠️ **Warning**: The font file **{FARUMA_FONT}** was not found.")
-if MVLHOHI_FONT_URI is None:
-    st.warning(f"⚠️ **Warning**: The font file **{MVLHOHI_FONT}** was not found.")
-    
-# Icon check (for information only)
-if VIBER_ICON_URI == MISSING_PLACEHOLDER or X_ICON_URI == MISSING_PLACEHOLDER or FACEBOOK_ICON_URI == MISSING_PLACEHOLDER:
-     st.warning(f"⚠️ **Warning**: One or more social media icon files were not found (e.g., {VIBER_ICON_PATH}). Check your `pages/` directory.")
-
+# Font URIs (Note: we check for None below)
+FARUMA_FONT_URI = get_asset_base64_uri(FARUMA_FONT)
+MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
 # --- 1. PAGE CONFIG and STYLING ---
 st.set_page_config(
@@ -88,7 +87,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🚀 CSS FIX: Hiding the Streamlit Header and Menu and aggressively reducing top margin.
+# 🚀 CSS FIX: Hiding Streamlit header/menu and aggressively reducing top margin.
+# Also, hiding the internal code blocks (for Streamlit deployment/sharing)
 st.markdown("""
     <style>
     /* HIDES THE STREAMLIT HEADER AND MENU BUTTON */
@@ -98,22 +98,30 @@ st.markdown("""
     
     /* Targets the main content block container */
     .block-container {
-        padding-top: 0rem; /* Remove default top padding */
-        /* Pull the content aggressively up into the default header area */
+        padding-top: 0rem; 
         margin-top: -50px; 
-        max-width: 100%; /* Ensure wide layout is respected */
+        max-width: 100%; 
     }
-    /* Targets the inner block that contains the components to pull it up */
-    .css-1r6bpt { 
-        padding-top: 0; 
+    
+    /* Hides the internal markdown/code block for HTML_GENERATOR */
+    /* This targets the Streamlit code block component */
+    .stCodeBlock {
+        display: none;
     }
     </style>
 """, unsafe_allow_html=True)
 
+# --- Error Checking ---
+MISSING_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
 
-# --- 2. EMBEDDED HTML/CSS/JS GENERATOR ---
+if EMBLEM_IMAGE_DATA_URI == MISSING_PLACEHOLDER or MAP_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
+    st.error("🛑 Critical Image assets (Emblem/Map) were not found. Check your file paths.")
+    st.stop()
 
-# Conditional Font Loading (Only load if URI is available)
+if FARUMA_FONT_URI is None or MVLHOHI_FONT_URI is None:
+     st.warning("⚠️ Font files not found. The display may use default fonts.")
+     
+# --- Conditional Font Loading ---
 faruma_font_css = f"""
     @font-face {{
         font-family: 'Faruma';
@@ -130,6 +138,8 @@ mvlhohi_font_css = f"""
     }}
 """ if MVLHOHI_FONT_URI else ""
 
+
+# --- 2. EMBEDDED HTML/CSS/JS GENERATOR ---
 
 # Define the massive HTML/CSS/JS block using f-string and triple quotes
 HTML_GENERATOR = f"""
@@ -160,7 +170,7 @@ HTML_GENERATOR = f"""
     {faruma_font_css}
     {mvlhohi_font_css}
 
-    /* --- EDITOR STYLES --- */
+    /* --- EDITOR STYLES (Kept for completeness but not relevant to the fix) --- */
     .editor-container {{
         width: 100%;
         max-width: 650px; 
@@ -176,21 +186,9 @@ HTML_GENERATOR = f"""
     .datetime-group .input-item {{ flex: 1; }}
     
     label {{ display: block; font-weight: bold; color: #004d99; margin-bottom: 4px; }}
-    
-    /* Global Textarea/Input Styling */
     textarea, input[type="date"], select {{ width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; }}
-    
-    /* Default forecast textareas (Fixed height, standard) */
     .forecast-textarea {{ height: 50px; resize: vertical; }}
-    
-    /* Advisory Textareas (Auto-resizing) */
-    .advisory-textarea {{ 
-        min-height: 25px; 
-        height: auto; 
-        overflow-y: hidden; 
-        resize: none; 
-    }}
-
+    .advisory-textarea {{ min-height: 25px; height: auto; overflow-y: hidden; resize: none; }}
     button {{ background-color: #004d99; color: white; border: none; border-radius: 6px; padding: 10px 16px; font-size: 15px; cursor: pointer; margin-top: 8px; width: 49%; box-sizing: border-box; }}
     button:nth-child(even) {{ margin-left: 1%; }}
     button:hover {{ background-color: #0066cc; }}
@@ -202,17 +200,17 @@ HTML_GENERATOR = f"""
         background-color: #ffffff; 
         box-shadow: 0 4px 14px rgba(0,0,0,0.1);
         border-radius: 12px;
-        padding: 20px 0; 
+        padding: 0; 
         display: flex;
         flex-direction: row; 
-        gap: 15px; 
+        gap: 0; 
         align-items: stretch; 
         overflow: hidden;
     }}
 
-    /* --- Map area (FIXED WIDTH, DYNAMIC HEIGHT) --- */
+    /* --- Map area --- */
     .map-area {{
-        flex: 0 0 120px; 
+        flex: 0 0 130px; 
         display: flex;
         align-items: center;
         justify-content: center;
@@ -225,8 +223,6 @@ HTML_GENERATOR = f"""
         max-width: 100%; 
         height: auto; 
         object-fit: contain; 
-        border-radius: 0;
-        box-shadow: none;
         padding-left: 10px; 
     }}
 
@@ -234,23 +230,23 @@ HTML_GENERATOR = f"""
     .post-content-area {{
         flex: 1; 
         background-color: #ffffff;
-        border-radius: 10px;
+        border-radius: 0 12px 12px 0; 
         padding: 0; 
         display: flex;
         flex-direction: column; 
     }}
 
-    /* --- Advisory section (Base style) --- */
+    /* --- Advisory section --- */
     .advisory-section {{
         background-color: #fffde7; 
         border-radius: 8px; 
-        margin: 5px 0 5px 0; 
+        margin: 5px 10px 5px 25px; 
         padding: 5px 15px; 
         display: none; 
         overflow: hidden; 
     }}
     
-    /* --- Advisory Red Styling (From user request) --- */
+    /* --- Advisory Red Styling --- */
     .red-advisory-style {{
         background-color: #b30000; 
         border: none; 
@@ -280,26 +276,33 @@ HTML_GENERATOR = f"""
         font-family: 'Faruma', Arial, sans-serif;
     }}
 
-    /* ========================================
-    *** FORECAST SECTIONS ***
-    ======================================== */
+    /* --- FORECAST SECTIONS --- */
     .bilingual-vertical-sections {{
         flex: 1; 
         display: flex;
         flex-direction: column; 
-        padding: 0 15px 0 25px; 
-        padding-top: 20px; 
+        padding: 5px 5px 0 15px; 
     }}
     
     .section-top-header {{
         text-align: center;
         padding: 5px 0; 
         margin-bottom: 0px; 
-        border-radius: 8px 0 0 0;
+        border-radius: 0;
     }}
 
-    .dhivehi-block-header {{ border-bottom: 4px solid #004d99; background-color: #e0f2f7; margin-top: 0; }}
-    .english-block-header {{ border-bottom: 4px solid #004d99; background-color: #e0f2f7; margin-top: 5px; }}
+    .dhivehi-block-header {{ 
+        border-bottom: 4px solid #004d99; 
+        background-color: #e0f2f7; 
+        margin-top: 0; 
+        border-radius: 0 12px 0 0; 
+        padding-right: 10px !important; 
+    }}
+    
+    .english-block-header {{ 
+        border-bottom: 4px solid #004d99; 
+        margin-top: 5px; 
+    }}
 
     .dhivehi-header-title {{
         font-size: 1.7em; color: #004d99; margin: 0; direction: rtl;
@@ -320,64 +323,88 @@ HTML_GENERATOR = f"""
     .forecast-item {{ margin-bottom: 6px; }}
     .forecast-line {{ font-size: 0.95em; line-height: 1.4; margin: 0; }}
     
-    .english-section .forecast-line {{ text-align: left; }}
+    .english-section .forecast-line {{ text-align: left; padding: 0 10px 0 0;}} 
 
     .dhivehi-section .forecast-line {{
-        text-align: right; direction: rtl; font-family: 'Faruma', Arial, sans-serif; 
+        text-align: right; direction: rtl; font-family: 'Faruma', Arial, sans-serif; padding: 0 0 0 10px;
     }}
 
     .english-section {{ padding-top: 5px; }}
-    
+    .en-content-wrapper {{ background-color: white; padding-bottom: 10px; margin-bottom: auto; }}
+
+
     /* ========================================
-    *** FOOTER STYLES (MODIFIED) ***
+    *** FOOTER STYLES (FIXED ALIGNMENT) ***
     ======================================== */
     .footer {{
-        display: flex; align-items: center; justify-content: space-between; 
-        padding: 10px 15px 10px 25px; background-color: #e0f2f7;
-        border-top: 1px solid #004d99; font-size: 13px; margin-top: auto; 
-        border-radius: 0 0 0 8px;
-    }}
-
-    .footer-left {{ 
+        width: 100%; 
         display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        flex-grow: 1; 
+        align-items: center; /* <<< KEY FIX: Vertically centers content in the footer flex container */
+        justify-content: space-between; 
+        padding: 10px 15px 10px 15px; 
+        background-color: #e0f2f7; 
+        border-top: 1px solid #004d99; 
+        font-size: 13px; 
+        margin-top: auto; 
+        box-sizing: border-box; 
+        border-radius: 0 0 12px 0; 
     }}
-    .footer-left span {{
-        font-weight: bold; color: #004d99; font-size: 12px; white-space: nowrap; 
+    
+    .footer-left {{ 
+        flex: 0 0 0px; 
+        width: 0; 
+        padding: 0;
+        margin: 0;
+        visibility: hidden; 
     }}
 
     .footer-center {{
+        display: flex;
+        align-items: center; /* <<< KEY FIX: Vertically centers elements inside the center block */
+        justify-content: center; 
         flex-grow: 1; 
-        text-align: center;
+        gap: 8px; 
     }}
-    .footer-center img {{ height: 28px; width: auto; }}
+    .footer-center img {{ 
+        height: 28px; 
+        width: auto; 
+        /* Added vertical alignment nudge for images if needed, but flex center should handle it */
+        vertical-align: middle; 
+    }}
+    .footer-center span {{
+        font-weight: bold; 
+        color: #004d99; 
+        font-size: 12px; 
+        white-space: nowrap; 
+        /* Added baseline/vertical-align property to help text center with images */
+        line-height: 28px; /* Match the height of the icons/emblem roughly */
+    }}
+    .footer-center .dhivehi-text-right {{
+        font-family: 'Faruma', Arial, sans-serif; 
+        direction: rtl; 
+        text-align: right;
+    }}
     
     .footer-right {{
+        flex-grow: 0; 
         display: flex; 
-        align-items: center; 
-        gap: 10px; /* Space between text and icons */
-        font-family: 'Faruma', Arial, sans-serif; 
-        color: #004d99; 
-        white-space: nowrap; 
-        font-size: 13px; 
+        align-items: center; /* <<< KEY FIX: Vertically centers icons in the right block */
+        justify-content: flex-end; 
+        gap: 4px; /* Space between the social icons */
         padding-right: 0; 
-        justify-content: flex-end; /* Push content to the right edge */
     }}
-    
-    .social-icons {{ 
-        display: flex; 
-        gap: 4px; 
-        padding-left: 10px; /* Space between Dhivehi text and icons */
-    }}
-    
+
     /* Styling for the social icon images */
     .social-icons img {{
         width: 20px; /* Size of the icons */
         height: 20px;
         transition: opacity 0.2s ease;
-        cursor: pointer;
+        vertical-align: middle; /* Ensure the image itself is vertically aligned */
+    }}
+    .icon-link {{
+        display: flex; /* Treat link as flex item to center the image if needed */
+        align-items: center;
+        height: 28px; /* Give it the same height budget as the emblem for alignment consistency */
     }}
     .icon-link:hover img {{ 
         opacity: 0.8; 
@@ -389,7 +416,6 @@ HTML_GENERATOR = f"""
 
 <div class="editor-container">
     <h2>📝 Daily Forecast Editor</h2>
-    
     <div class="datetime-group">
         <div class="input-item">
             <label for="date-input">Date</label>
@@ -481,46 +507,45 @@ HTML_GENERATOR = f"""
                 <div class="forecast-item" id="wave-dv-container"></div>
             </div>
             
-            <div class="section-top-header english-block-header">
-                <h2 class="english-header-title" id="en-header-title"></h2>
-                <p class="english-header-date" id="en-header-date"></p>
-            </div>
+            <div class="en-content-wrapper"> 
+                <div class="section-top-header english-block-header">
+                    <h2 class="english-header-title" id="en-header-title"></h2>
+                    <p class="english-header-date" id="en-header-date"></p>
+                </div>
 
-            <div class="advisory-section red-advisory-style" id="adv-en-section">
-                <div class="advisory-en" id="adv-en-container"></div>
-            </div>
+                <div class="advisory-section red-advisory-style" id="adv-en-section">
+                    <div class="advisory-en" id="adv-en-container"></div>
+                </div>
 
-            <div class="english-section">
-                <div class="forecast-item" id="wx-en-container"></div>
-                <div class="forecast-item" id="wind-en-container"></div>
-                <div class="forecast-item" id="sea-en-container"></div>
-                <div class="forecast-item" id="wave-en-container"></div>
+                <div class="english-section">
+                    <div class="forecast-item" id="wx-en-container"></div>
+                    <div class="forecast-item" id="wind-en-container"></div>
+                    <div class="forecast-item" id="sea-en-container"></div>
+                    <div class="forecast-item" id="wave-en-container"></div>
+                </div>
             </div>
-
         </div>
-
+        
         <footer class="footer">
-            <div class="footer-left">
-                <span>Maldives Meteorological Service</span>
-            </div>
+            
+            <div class="footer-left"></div>
 
             <div class="footer-center">
+                <span>Maldives Meteorological Service</span> 
                 <img src="{EMBLEM_IMAGE_DATA_URI}" alt="Maldives Emblem" crossorigin="anonymous">
+                <span class="dhivehi-text-right">މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް</span>
             </div>
 
             <div class="footer-right">
-                މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް
-                <div class="social-icons">
-                    <a href="#" target="_blank" class="icon-link" title="Viber">
-                        <img src="{VIBER_ICON_URI}" alt="Viber" crossorigin="anonymous">
-                    </a>
-                    <a href="#" target="_blank" class="icon-link" title="X (Twitter)">
-                         <img src="{X_ICON_URI}" alt="X" crossorigin="anonymous">
-                    </a>
-                    <a href="#" target="_blank" class="icon-link" title="Facebook">
-                         <img src="{FACEBOOK_ICON_URI}" alt="Facebook" crossorigin="anonymous">
-                    </a>
-                </div>
+                <a href="#" target="_blank" class="icon-link" title="Viber">
+                    <img src="{VIBER_ICON_URI}" alt="Viber" crossorigin="anonymous">
+                </a>
+                <a href="#" target="_blank" class="icon-link" title="X (Twitter)">
+                    <img src="{X_ICON_URI}" alt="X" crossorigin="anonymous">
+                </a>
+                <a href="#" target="_blank" class="icon-link" title="Facebook">
+                    <img src="{FACEBOOK_ICON_URI}" alt="Facebook" crossorigin="anonymous">
+                </a>
             </div>
         </footer>
     </div>
@@ -533,7 +558,6 @@ HTML_GENERATOR = f"""
         "ޖުލައި", "އޮގަސްޓު", "ސެޕްޓެމްބަރު", "އޮކްޓޯބަރު", "ނޮވެމްބަރު", "ޑިސެމްބަރު"
     ];
 
-    // Helper functions 
     function getMonthName(monthIndex) {{
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         return months[monthIndex];
@@ -566,13 +590,13 @@ HTML_GENERATOR = f"""
             
             if (lang === 'en') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
-                let headingText = id === 'adv' ? 'Advisory' : heading.toUpperCase();
+                let headingText = id === 'adv' ? 'Advisory' : heading;
                 
                 line += `<span style="font-weight: bold; color: ${{color}}; margin-right: 5px;">${{headingText}}:</span>${{contentText}}`;
             }} else if (lang === 'dv') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
                 let dvHeadingText;
-                if (id === 'adv') dvHeadingText = ' ސަމާލު:'
+                if (id === 'adv') dvHeadingText = ' އިރުޝާދު:'
                 else if (id === 'wx') dvHeadingText = 'މޫސުން:'
                 else if (id === 'wind') dvHeadingText = 'ވައި: '
                 else if (id === 'sea') dvHeadingText = 'ކަނޑު:'
@@ -588,28 +612,20 @@ HTML_GENERATOR = f"""
         container.innerHTML = line;
     }}
 
-    /* === Auto-size Textarea === */
     function autoSizeTextarea(element) {{
-        element.style.height = 'auto'; // Reset height to recalculate
-        // Set height to scrollHeight (content height)
+        element.style.height = 'auto'; 
         element.style.height = element.scrollHeight + 'px'; 
     }}
-    /* ==================================== */
 
-    /* === Dynamic Height Adjustment (for Map) === */
     function adjustMapHeight() {{
         const contentArea = document.getElementById('post-content-area');
         const mapArea = document.getElementById('map-area');
 
         if (!contentArea || !mapArea) return;
 
-        // Get the actual computed height of the content area 
         const contentHeight = contentArea.offsetHeight;
-
-        // Apply that height to the map container. 
         mapArea.style.height = `${{contentHeight}}px`;
     }}
-    /* ==================================== */
 
     function updatePost() {{
         const dateInputEl = document.getElementById('date-input');
@@ -622,7 +638,6 @@ HTML_GENERATOR = f"""
         const timeInput = timeInputEl.value;
         const period = periodEl.value;
 
-        // 1. Dynamic Titles
         let enHeader, dvHeader;
         if (period === 'today') {{
             enHeader = "Today's Weather";
@@ -632,7 +647,6 @@ HTML_GENERATOR = f"""
             dvHeader = "މިރޭގެ މޫސުން";
         }}
 
-        // 2. Dynamic Time/Date Formatting
         const dateParts = dateInput.split('-');
         const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
         const day = date.getDate();
@@ -646,27 +660,22 @@ HTML_GENERATOR = f"""
         const forecastDateEn = `Valid until ${{time}} hrs, ${{day}}${{suffix}} ${{monthEn}} ${{year}}`;
         const forecastDateDv = `${{year}} ${{monthDv}} ${{day}} ވަނަ ދުވަހުގެ ${{time}} އާ ހަމައަށް`;
         
-        // 3. Update the new header fields
         document.getElementById('dv-header-title').textContent = dvHeader;
         document.getElementById('dv-header-date').textContent = forecastDateDv;
         document.getElementById('en-header-title').textContent = enHeader;
         document.getElementById('en-header-date').textContent = forecastDateEn;
 
-        // 4. Update Input Fields 
         updateForecastItem('en', 'adv', 'Advisory', document.getElementById('adv-en').value);
         updateForecastItem('dv', 'adv', 'އިރުޝާދު', document.getElementById('adv-dv').value);
-
         updateForecastItem('en', 'wx', 'Weather', document.getElementById('wx-en').value);
         updateForecastItem('en', 'wind', 'Wind', document.getElementById('wind-en').value);
         updateForecastItem('en', 'sea', 'Sea', document.getElementById('sea-en').value);
-        updateForecastItem('en', 'wave', 'Wave height', document.getElementById('wave-en').value);
-
+        updateForecastItem('en', 'wave', 'Wave Height', document.getElementById('wave-en').value);
         updateForecastItem('dv', 'wx', 'މޫސުން', document.getElementById('wx-dv').value);
         updateForecastItem('dv', 'wind', 'ވައި', document.getElementById('wind-dv').value);
         updateForecastItem('dv', 'sea', 'ކަނޑު ', document.getElementById('sea-dv').value);
         updateForecastItem('dv', 'wave', 'ރާޅުގެ އުސްމިން', document.getElementById('wave-dv').value);
 
-        // 5. Adjust map height to match the (now correctly-sized) content area
         adjustMapHeight(); 
     }}
 
@@ -692,7 +701,6 @@ HTML_GENERATOR = f"""
               return;
         }}
 
-        // Ensure the height is correct before capturing
         adjustMapHeight();
 
         html2canvas(element, {{ 
@@ -713,7 +721,6 @@ HTML_GENERATOR = f"""
             document.body.removeChild(link);
         }}).catch(err => {{
             console.error("Image generation failed:", err);
-            // WARNING for the user
             alert("❌ Download Failed! If the preview looks fine, try updating the preview first, then downloading. If assets are missing, check the console errors.");
         }});
     }}
@@ -730,13 +737,11 @@ HTML_GENERATOR = f"""
         const dateInput = document.getElementById('date-input');
         if (dateInput) {{ dateInput.value = today; }}
         
-        // Auto-size the advisory textareas on initial load
         document.querySelectorAll('.advisory-textarea').forEach(autoSizeTextarea);
         
         updatePost();
     }}
     
-    // Initialize the script after a brief timeout to ensure DOM is fully loaded
     (function() {{
         setTimeout(initializeEditor, 100); 
     }})();
@@ -748,12 +753,11 @@ HTML_GENERATOR = f"""
 
 # --- 3. STREAMLIT RENDERING ---
 
-# RENDER THE ENTIRE HTML/CSS/JS GENERATOR
+st.markdown("<h2 style='text-align:center; color: #004d99;'>📱 Viber / Social Media Post Generator</h2>", unsafe_allow_html=True)
+
+# Render the entire HTML/CSS/JS generator
 components.html(
     HTML_GENERATOR,
     height=1600,
     scrolling=True
 )
-
-
-
