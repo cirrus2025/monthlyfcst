@@ -284,55 +284,43 @@ HTML_GENERATOR = f"""
     }}
     
     .section-top-header {{
-        /* REMOVED text-align: center; */
+        text-align: center; /* Main title centered */
         padding: 5px 0; 
         margin-bottom: 0px; 
         border-radius: 0;
-        display: flex;
-        flex-direction: column;
+        display: block; 
     }}
 
-    /* DHIVEHI HEADER ALIGNMENT (RTL - Align Right) */
+    /* DHIVEHI HEADER (Main Title Centered) */
     .dhivehi-block-header {{ 
         border-bottom: 4px solid #004d99; 
         background-color: #e0f2f7; 
         margin-top: 0; 
         border-radius: 0 12px 0 0; 
         padding: 5px 10px 5px 0 !important; 
-        align-items: flex-end; 
     }}
     
     .dhivehi-header-title {{
         font-size: 1.7em; color: #004d99; margin: 0; direction: rtl;
         font-family: 'Faruma', Arial, sans-serif; 
-        text-align: right; /* CRITICAL FIX: Ensure text is aligned right */
+        text-align: center; 
     }}
 
-    .dhivehi-header-date {{
-        font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; direction: rtl;
-        font-family: 'Faruma', Arial, sans-serif; 
-        text-align: right; /* CRITICAL FIX: Ensure text is aligned right */
-    }}
-
-    /* ENGLISH HEADER ALIGNMENT (LTR - Align Left) */
+    /* ENGLISH HEADER (Main Title Centered) */
     .english-block-header {{ 
         border-bottom: 4px solid #004d99; 
         margin-top: 5px; 
         background-color: #e0f2f7; 
         padding: 5px 0 5px 10px !important; 
         border-radius: 0; 
-        align-items: flex-start; 
     }}
 
     .english-header-title {{
         font-size: 1.5em; color: #004d99; font-weight: bold; margin: 0; letter-spacing: 1px;
-        text-align: left; /* CRITICAL FIX: Ensure text is aligned left */
+        text-align: center; 
     }}
     
-    .english-header-date {{ 
-        font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; 
-        text-align: left; /* CRITICAL FIX: Ensure text is aligned left */
-    }}
+    /* REMOVED: .english-header-date and .dhivehi-header-date styles as the elements are removed from HTML */
 
     /* Sharper Divider Line */
     .forecast-item {{ 
@@ -364,13 +352,15 @@ HTML_GENERATOR = f"""
         text-align: center;
     }}
 
+    /* English alignment (Label to the left) */
     .english-section .forecast-line {{ text-align: left; padding: 0 10px 0 0;}} 
-    /* For Dhivehi, need to reverse the flex order for RTL */
+    
+    /* Dhivehi alignment (Label to the right) */
     .dhivehi-section .forecast-line {{
         text-align: right; direction: rtl; font-family: 'Faruma', Arial, sans-serif; 
         padding: 0 0 0 10px;
-        flex-direction: row-reverse; 
-        justify-content: flex-end;
+        flex-direction: row-reverse; /* Pushes icon and label to the right */
+        justify-content: flex-start; /* Corrected to flex-start for right alignment in RTL */
     }}
     .dhivehi-section .icon {{ 
         margin-right: 0; 
@@ -469,11 +459,11 @@ HTML_GENERATOR = f"""
     <div class="datetime-group">
         <div class="input-item">
             <label for="date-input">Date</label>
-            <input type="date" id="date-input" value="2025-12-14" onchange="updatePost()">
+            <input type="date" id="date-input" value="2025-12-14"> 
         </div>
         <div class="input-item">
             <label for="time-select">Valid Until Time (hrs)</label>
-            <select id="time-select" onchange="updatePost()">
+            <select id="time-select">
             </select>
         </div>
         <div class="input-item">
@@ -543,8 +533,7 @@ HTML_GENERATOR = f"""
             
             <div class="section-top-header dhivehi-block-header">
                 <h2 class="dhivehi-header-title" id="dv-header-title"></h2>
-                <p class="dhivehi-header-date" id="dv-header-date"></p>
-            </div>
+                </div>
             
             <div class="advisory-section red-advisory-style" id="adv-dv-section">
                 <div class="advisory-dv" id="adv-dv-container"></div>
@@ -560,8 +549,7 @@ HTML_GENERATOR = f"""
             <div class="en-content-wrapper"> 
                 <div class="section-top-header english-block-header">
                     <h2 class="english-header-title" id="en-header-title"></h2>
-                    <p class="english-header-date" id="en-header-date"></p>
-                </div>
+                    </div>
 
                 <div class="advisory-section red-advisory-style" id="adv-en-section">
                     <div class="advisory-en" id="adv-en-container"></div>
@@ -694,14 +682,10 @@ HTML_GENERATOR = f"""
     }}
 
     function updatePost() {{
-        const dateInputEl = document.getElementById('date-input');
-        const timeInputEl = document.getElementById('time-select');
         const periodEl = document.getElementById('forecast-period');
         
-        if (!dateInputEl || !timeInputEl || !periodEl) return; 
+        if (!periodEl) return; 
 
-        const dateInput = dateInputEl.value;
-        const timeInput = timeInputEl.value;
         const period = periodEl.value;
 
         let enHeader, dvHeader;
@@ -712,24 +696,12 @@ HTML_GENERATOR = f"""
             enHeader = "TONIGHT'S WEATHER";
             dvHeader = "މިރޭގެ މޫސުން";
         }}
-
-        const dateParts = dateInput.split('-');
-        const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-        const day = date.getDate();
-        const monthIndex = date.getMonth();
-        const monthEn = getMonthName(monthIndex);
-        const monthDv = getDhivehiMonthName(monthIndex);
-        const year = date.getFullYear();
-        const time = timeInput ? timeInput.replace(':', '') : '0000';
-        const suffix = getDaySuffix(day);
-
-        const forecastDateEn = `Valid until ${{time}} hrs, ${{day}}${{suffix}} ${{monthEn}} ${{year}}`;
-        const forecastDateDv = `${{year}} ${{monthDv}} ${{day}} ވަނަ ދުވަހުގެ ${{time}} އާ ހަމައަށް`;
         
+        // Removed Date/Time logic as per request
         document.getElementById('dv-header-title').textContent = dvHeader;
-        document.getElementById('dv-header-date').textContent = forecastDateDv;
+        // document.getElementById('dv-header-date').textContent = ""; // Date element removed
         document.getElementById('en-header-title').textContent = enHeader;
-        document.getElementById('en-header-date').textContent = forecastDateEn;
+        // document.getElementById('en-header-date').textContent = ""; // Date element removed
 
         // Use the new updateForecastItem function with icons/dividers
         updateForecastItem('en', 'adv', 'Advisory', document.getElementById('adv-en').value);
@@ -816,13 +788,3 @@ HTML_GENERATOR = f"""
 </script>
 </body>
 </html>
-"""
-
-# --- 3. STREAMLIT RENDERING ---
-
-# Render the entire HTML/CSS/JS generator
-components.html(
-    HTML_GENERATOR,
-    height=1600,
-    scrolling=True
-)
