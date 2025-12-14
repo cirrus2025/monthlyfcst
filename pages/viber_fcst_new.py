@@ -264,6 +264,9 @@ HTML_GENERATOR = f"""
         direction: rtl;
         text-align: right;
         font-family: 'Faruma', Arial, sans-serif;
+        /* ADDED: Use row-reverse to correctly position flex items (icon/heading/text) for RTL */
+        flex-direction: row-reverse; 
+        justify-content: flex-end; /* Pushes content to the right edge */
     }}
 
     /* --- FORECAST SECTIONS --- */
