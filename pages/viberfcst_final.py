@@ -4,23 +4,32 @@ import base64
 import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
-# ⚠️ IMPORTANT: Ensure these files exist in the same directory as this script,
-# or adjust the paths accordingly.
-MAP_FILE_PATH = "maldives_map.jpg"
-EMBLEM_FILE_PATH = "emblem.png"
 
-# Font paths (assuming they exist in the specified subfolder 'static/fonts/')
-# Ensure these files are present to avoid errors.
-FARUMA_FONT = "static/fonts/Faruma.ttf"
-MVLHOHI_FONT = "static/fonts/Mvlhohi bold.ttf"
+# ✅ FIX: Updated to the user-uploaded file name for the Emblem
+EMBLEM_FILE_PATH = "image_c17197.png"
+
+# ⚠️ WARNING: This file is still missing. We will use a placeholder if not found.
+MAP_FILE_PATH = "maldives_map.jpg"
+
+# ✅ FIX: Updated to assume fonts are in the SAME directory as the script.
+FARUMA_FONT = "Faruma.ttf"
+MVLHOHI_FONT = "Mvlhohi bold.ttf"
 
 
 def get_asset_base64_uri(path):
-    """Converts a local file (image or font) to a Base64 Data URI."""
+    """Converts a local file (image or font) to a Base64 Data URI or returns a placeholder/None if missing."""
+    
+    # Placeholder for missing image files (small grey square)
+    MISSING_IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
+    
     if not os.path.exists(path):
-        # Using a default error image for demonstration, but you must supply the files.
         st.error(f"❌ Error: Required file not found at path: **{path}**")
-        return None
+        
+        # If it's an image, return a placeholder. If it's a font, return None to let CSS use a default.
+        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            return MISSING_IMAGE_PLACEHOLDER
+        return None # Graceful fallback for missing fonts
+
     try:
         with open(path, "rb") as file:
             encoded_string = base64.b64encode(file.read()).decode()
@@ -35,12 +44,28 @@ def get_asset_base64_uri(path):
             return f"data:{mime_type};base64,{encoded_string}"
     except Exception as e:
         st.error(f"❌ Error reading or encoding file **{path}**: {e}")
-        return None
+        return MISSING_IMAGE_PLACEHOLDER
 
-# Convert all image assets to Base64
+
+# Convert all assets to Base64
 MAP_IMAGE_DATA_URI = get_asset_base64_uri(MAP_FILE_PATH)
 EMBLEM_IMAGE_DATA_URI = get_asset_base64_uri(EMBLEM_FILE_PATH)
+FARUMA_FONT_URI = get_asset_base64_uri(FARUMA_FONT)
+MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
+
+# --- Check for critical asset errors before rendering HTML ---
+if EMBLEM_IMAGE_DATA_URI == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII=":
+     st.error("🛑 The Emblem file **image_c17197.png** was not found. Please ensure it is uploaded to the same directory as the script. Stopping execution.")
+     st.stop()
+     
+if MAP_IMAGE_DATA_URI.startswith("data:image/png;base64"):
+    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found and a placeholder is being used. Please upload the map image to the correct location.")
+    
+if FARUMA_FONT_URI is None:
+    st.warning(f"⚠️ **Warning**: The font file **{FARUMA_FONT}** was not found. Dhivehi text may not display correctly.")
+if MVLHOHI_FONT_URI is None:
+    st.warning(f"⚠️ **Warning**: The font file **{MVLHOHI_FONT}** was not found. Header text may not display correctly.")
 
 # --- 1. PAGE CONFIG and STYLING ---
 st.set_page_config(
@@ -52,6 +77,11 @@ st.set_page_config(
 # 🚀 AGGRESSIVE TOP-SPACE REMOVAL: Uses negative margin to pull content up.
 st.markdown("""
     <style>
+    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON */
+    .stApp header {
+        display: none;
+    }
+    
     /* Targets the main content block container */
     .block-container {
         padding-top: 0rem; /* Remove default top padding */
@@ -68,9 +98,22 @@ st.markdown("""
 
 # --- 2. EMBEDDED HTML/CSS/JS GENERATOR ---
 
-if any(uri is None for uri in [MAP_IMAGE_DATA_URI, EMBLEM_IMAGE_DATA_URI]):
-    st.warning("Please resolve the file path errors for the images listed above before running the tool.")
-    st.stop()
+# Conditional Font Loading (Only load if URI is available)
+faruma_font_css = f"""
+    @font-face {{
+        font-family: 'Faruma';
+        src: url('{FARUMA_FONT_URI}') format('truetype');
+        font-weight: normal;
+    }}
+""" if FARUMA_FONT_URI else ""
+
+mvlhohi_font_css = f"""
+    @font-face {{
+        font-family: 'Mvlhohi-Bold';
+        src: url('{MVLHOHI_FONT_URI}') format('truetype');
+        font-weight: bold;
+    }}
+""" if MVLHOHI_FONT_URI else ""
 
 
 # Define the massive HTML/CSS/JS block using f-string and triple quotes
@@ -85,10 +128,6 @@ HTML_GENERATOR = f"""
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
-    /* Add CSS variables for flexible control */
-    :root {{
-    }}
-
     /* --- Base layout and fonts --- */
     body {{
         font-family: Arial, sans-serif;
@@ -101,18 +140,10 @@ HTML_GENERATOR = f"""
     }}
     
     /* ========================================
-    *** FONT DEFINITIONS ***
+    *** FONT DEFINITIONS (Using Base64 URIs) ***
     ======================================== */
-    @font-face {{
-        font-family: 'Faruma';
-        src: url('{FARUMA_FONT}') format('truetype');
-        font-weight: normal;
-    }}
-    @font-face {{
-        font-family: 'Mvlhohi-Bold';
-        src: url('{MVLHOHI_FONT}') format('truetype');
-        font-weight: bold;
-    }}
+    {faruma_font_css}
+    {mvlhohi_font_css}
 
     /* --- EDITOR STYLES --- */
     .editor-container {{
@@ -139,9 +170,9 @@ HTML_GENERATOR = f"""
     
     /* Advisory Textareas (Auto-resizing) */
     .advisory-textarea {{ 
-        min-height: 25px; /* Ensures minimum one-line height */
+        min-height: 25px; 
         height: auto; 
-        overflow-y: hidden; /* Hides scrollbar */
+        overflow-y: hidden; 
         resize: none; 
     }}
 
@@ -197,17 +228,17 @@ HTML_GENERATOR = f"""
     /* --- Advisory section (Base style) --- */
     .advisory-section {{
         background-color: #fffde7; 
-        border-radius: 8px; /* Added: Slightly more rounded */
+        border-radius: 8px; 
         margin: 5px 0 5px 0; 
-        padding: 5px 15px; /* Adjusted padding: 5px top/bottom, 15px left/right */
+        padding: 5px 15px; 
         display: none; 
         overflow: hidden; 
     }}
     
     /* --- Advisory Red Styling (From user request) --- */
     .red-advisory-style {{
-        background-color: #b30000; /* Darker, solid red background */
-        border: none; /* Removed the border to make it a solid block */
+        background-color: #b30000; 
+        border: none; 
     }}
     
     .red-advisory-style .advisory-dv p, 
@@ -215,12 +246,12 @@ HTML_GENERATOR = f"""
     .red-advisory-style .advisory-en p, 
     .red-advisory-style .advisory-en span {{
         color: white !important; 
-        font-weight: bold; /* Added: Makes the text bold */
+        font-weight: bold; 
     }}
     
     .advisory-en p, .advisory-dv p {{
         font-size: 0.95em;
-        margin: 0; /* Ensures no extra vertical space around text */
+        margin: 0; 
         line-height: 1.4em;
         display: block; 
         width: 100%;
