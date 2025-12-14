@@ -222,9 +222,9 @@ HTML_GENERATOR = f"""
     .advisory-section {{
         background-color: #fffde7; 
         border-radius: 8px; 
-        margin: 5px 10px 5px 20px; 
-        /* FIXED: Reduced vertical padding to 1px for minimum height */
-        padding: 1px 15px; 
+        /* FIXED: Remove margins and set padding to 1px vertically to extend the bar width */
+        margin: 5px 0 5px 0; 
+        padding: 1px 0; /* Remove internal padding on the bar itself */
         display: none; 
         overflow: hidden; 
     }}
@@ -249,6 +249,8 @@ HTML_GENERATOR = f"""
         line-height: 1.4em;
         display: block; 
         width: 100%;
+        /* ADDED: Internal padding to align with the rest of the text content */
+        padding: 0 10px 0 15px; 
     }}
     
     .advisory-en p {{ text-align: left; }}
