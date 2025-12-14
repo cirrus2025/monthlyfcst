@@ -5,13 +5,13 @@ import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 
-# ✅ FIX: Updated to the user-uploaded file name for the Emblem
-EMBLEM_FILE_PATH = "emblem.png"
+# ✅ FIX: Setting the file path to the user's uploaded name 'image_c17197.png'
+EMBLEM_FILE_PATH = "image_c17197.png"
 
-# ⚠️ WARNING: This file is still missing. We will use a placeholder if not found.
+# ⚠️ WARNING: This file is still missing and a placeholder will be used if not found.
 MAP_FILE_PATH = "maldives_map.jpg"
 
-# ✅ FIX: Updated to assume fonts are in the SAME directory as the script.
+# ✅ FIX: Confirmed the fonts are in the SAME directory as the script.
 FARUMA_FONT = "Faruma.ttf"
 MVLHOHI_FONT = "Mvlhohi bold.ttf"
 
@@ -55,9 +55,11 @@ MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
 
 # --- Check for critical asset errors before rendering HTML ---
-if EMBLEM_IMAGE_DATA_URI == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII=":
-     st.error("🛑 The Emblem file **image_c17197.png** was not found. Please ensure it is uploaded to the same directory as the script. Stopping execution.")
-     st.stop()
+if EMBLEM_IMAGE_DATA_URI.startswith("data:image/png;base64"):
+     # This check needs to specifically look for the small gray box placeholder data URI
+     if EMBLEM_IMAGE_DATA_URI == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII=":
+        st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found. Please ensure it is uploaded to the same directory as the script. Stopping execution.")
+        st.stop()
      
 if MAP_IMAGE_DATA_URI.startswith("data:image/png;base64"):
     st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found and a placeholder is being used. Please upload the map image to the correct location.")
@@ -730,7 +732,3 @@ components.html(
     height=1600,
     scrolling=True
 )
-
-
-
-
