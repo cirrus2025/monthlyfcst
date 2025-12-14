@@ -4,13 +4,11 @@ import base64
 import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
-# ⚠️ IMPORTANT: Ensure these files exist in the same directory as this script,
-# or adjust the paths accordingly.
+# ⚠️ IMPORTANT: ASSUMING THESE FILES ARE IN THE SAME DIRECTORY AS THIS SCRIPT.
 MAP_FILE_PATH = "maldives_map.jpg"
 EMBLEM_FILE_PATH = "emblem.png"
 
-# Font paths (assuming they exist in the specified subfolder 'static/fonts/')
-# Ensure these files are present to avoid errors.
+# Assuming fonts are in a subdirectory called 'static/fonts/' relative to where the script is run
 FARUMA_FONT = "static/fonts/Faruma.ttf"
 MVLHOHI_FONT = "static/fonts/Mvlhohi bold.ttf"
 
@@ -18,8 +16,7 @@ MVLHOHI_FONT = "static/fonts/Mvlhohi bold.ttf"
 def get_asset_base64_uri(path):
     """Converts a local file (image or font) to a Base64 Data URI."""
     if not os.path.exists(path):
-        # Using a default error image for demonstration, but you must supply the files.
-        st.error(f"❌ Error: Required file not found at path: **{path}**")
+        st.error(f"❌ Error: Required file not found at path: **{path}**. Please check your file paths.")
         return None
     try:
         with open(path, "rb") as file:
@@ -29,6 +26,8 @@ def get_asset_base64_uri(path):
             elif path.lower().endswith(('.jpg', '.jpeg')):
                 mime_type = 'image/jpeg'
             elif path.lower().endswith(('.ttf', '.otf', '.woff', '.woff2')):
+                # WARNING: Using 'font/ttf' for Base64 fonts embedded in HTML can be tricky. 
+                # Ensure your browser/environment supports this for local TTF files.
                 mime_type = 'font/ttf' 
             else:
                 mime_type = 'application/octet-stream'
@@ -52,16 +51,16 @@ st.set_page_config(
 # 🚀 AGGRESSIVE TOP-SPACE REMOVAL AND HEADER HIDING COMBINED
 st.markdown("""
     <style>
-    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON (New addition) */
+    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON */
     .stApp header {
         display: none;
     }
     
-    /* Targets the main content block container */
+    /* Targets the main content block container to remove top padding and use negative margin */
     .block-container {
-        padding-top: 0rem; /* Remove default top padding */
-        margin-top: -50px; /* Pull the content aggressively up into the default header area */
-        max-width: 100%; /* Ensure wide layout is respected */
+        padding-top: 0rem; 
+        margin-top: -50px; 
+        max-width: 100%; 
     }
     /* Targets the inner block that contains the components to pull it up */
     .css-1r6bpt { 
@@ -110,11 +109,13 @@ HTML_GENERATOR = f"""
     ======================================== */
     @font-face {{
         font-family: 'Faruma';
+        /* NOTE: You must ensure FARUMA_FONT path/Base64 conversion is working */
         src: url('{FARUMA_FONT}') format('truetype');
         font-weight: normal;
     }}
     @font-face {{
         font-family: 'Mvlhohi-Bold';
+        /* NOTE: You must ensure MVLHOHI_FONT path/Base64 conversion is working */
         src: url('{MVLHOHI_FONT}') format('truetype');
         font-weight: bold;
     }}
@@ -144,9 +145,9 @@ HTML_GENERATOR = f"""
     
     /* Advisory Textareas (Auto-resizing) */
     .advisory-textarea {{ 
-        min-height: 25px; /* Ensures minimum one-line height */
+        min-height: 25px; 
         height: auto; 
-        overflow-y: hidden; /* Hides scrollbar */
+        overflow-y: hidden; 
         resize: none; 
     }}
 
@@ -202,17 +203,17 @@ HTML_GENERATOR = f"""
     /* --- Advisory section (Base style) --- */
     .advisory-section {{
         background-color: #fffde7; 
-        border-radius: 8px; /* Added: Slightly more rounded */
+        border-radius: 8px; 
         margin: 5px 0 5px 0; 
-        padding: 5px 15px; /* Adjusted padding: 5px top/bottom, 15px left/right */
+        padding: 5px 15px; 
         display: none; 
         overflow: hidden; 
     }}
     
     /* --- Advisory Red Styling (From user request) --- */
     .red-advisory-style {{
-        background-color: #b30000; /* Darker, solid red background */
-        border: none; /* Removed the border to make it a solid block */
+        background-color: #b30000; 
+        border: none; 
     }}
     
     .red-advisory-style .advisory-dv p, 
@@ -220,12 +221,12 @@ HTML_GENERATOR = f"""
     .red-advisory-style .advisory-en p, 
     .red-advisory-style .advisory-en span {{
         color: white !important; 
-        font-weight: bold; /* Added: Makes the text bold */
+        font-weight: bold; 
     }}
     
     .advisory-en p, .advisory-dv p {{
         font-size: 0.95em;
-        margin: 0; /* Ensures no extra vertical space around text */
+        margin: 0; 
         line-height: 1.4em;
         display: block; 
         width: 100%;
