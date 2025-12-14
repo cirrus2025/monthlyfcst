@@ -224,7 +224,7 @@ HTML_GENERATOR = f"""
         border-radius: 8px; 
         /* FIXED: Remove margins and set padding to 1px vertically to extend the bar width */
         margin: 5px 0 5px 0; 
-        padding: 1px 15px; 
+        padding: 1px 0; /* Remove internal padding on the bar itself */
         display: none; 
         overflow: hidden; 
     }}
@@ -249,30 +249,16 @@ HTML_GENERATOR = f"""
         line-height: 1.4em;
         display: block; 
         width: 100%;
-        /* REMOVED: Internal padding that conflicts with the section padding */
-        padding: 0;
+        /* ADDED: Internal padding to align with the rest of the text content */
+        padding: 0 10px 0 15px; 
     }}
     
-    .advisory-en p {{ 
-        /* FIXED: Added .forecast-line properties to advisory p tags */
-        display: flex; 
-        align-items: center;
-        text-align: left;
-        direction: ltr;
-        font-family: Arial, sans-serif;
-    }}
+    .advisory-en p {{ text-align: left; }}
 
     .advisory-dv p {{
-        /* FIXED: Added .forecast-line properties to advisory p tags */
-        display: flex; 
-        align-items: center;
-        /* FIXED: Explicitly set RTL direction and alignment for Dhivehi advisory text */
         direction: rtl;
         text-align: right;
         font-family: 'Faruma', Arial, sans-serif;
-        /* ADDED: Use row-reverse to correctly position flex items (icon/heading/text) for RTL */
-        flex-direction: row-reverse; 
-        justify-content: flex-end; /* Pushes content to the right edge */
     }}
 
     /* --- FORECAST SECTIONS --- */
@@ -284,41 +270,44 @@ HTML_GENERATOR = f"""
     }}
     
     .section-top-header {{
-        text-align: center; /* Main title centered */
+        text-align: center;
         padding: 5px 0; 
         margin-bottom: 0px; 
         border-radius: 0;
-        display: block; 
     }}
 
-    /* DHIVEHI HEADER (Main Title Centered) */
     .dhivehi-block-header {{ 
         border-bottom: 4px solid #004d99; 
-        background-color: #e0f2f7; 
+        background-color: #e0f2f7; /* Keep the Dhivehi blue shade */
         margin-top: 0; 
         border-radius: 0 12px 0 0; 
-        padding: 5px 10px 5px 0 !important; 
+        padding-right: 10px !important; 
     }}
     
-    .dhivehi-header-title {{
-        font-size: 1.7em; color: #004d99; margin: 0; direction: rtl;
-        font-family: 'Faruma', Arial, sans-serif; 
-        text-align: center; 
-    }}
-
-    /* ENGLISH HEADER (Main Title Centered) */
     .english-block-header {{ 
         border-bottom: 4px solid #004d99; 
         margin-top: 5px; 
-        background-color: #e0f2f7; 
-        padding: 5px 0 5px 10px !important; 
-        border-radius: 0; 
+        /* FIXED: Restore the color shade for the English block */
+        background-color: #e0f2f7; /* Applying the same blue shade */
+        padding-right: 10px !important; 
+        border-radius: 0; /* Ensures it sits neatly below Dhivehi section/advisory */
+    }}
+
+    .dhivehi-header-title {{
+        font-size: 1.7em; color: #004d99; margin: 0; direction: rtl;
+        font-family: 'Faruma', Arial, sans-serif; 
     }}
 
     .english-header-title {{
         font-size: 1.5em; color: #004d99; font-weight: bold; margin: 0; letter-spacing: 1px;
-        text-align: center; 
     }}
+    
+    .dhivehi-header-date {{
+        font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; direction: rtl;
+        font-family: 'Faruma', Arial, sans-serif; 
+    }}
+    
+    .english-header-date {{ font-size: 1.05em; font-weight: bold; color: #333; margin-top: 0; }}
     
     /* Sharper Divider Line */
     .forecast-item {{ 
@@ -350,15 +339,13 @@ HTML_GENERATOR = f"""
         text-align: center;
     }}
 
-    /* English alignment (Label to the left) */
     .english-section .forecast-line {{ text-align: left; padding: 0 10px 0 0;}} 
-    
-    /* Dhivehi alignment (Label to the right) */
+    /* For Dhivehi, need to reverse the flex order for RTL */
     .dhivehi-section .forecast-line {{
         text-align: right; direction: rtl; font-family: 'Faruma', Arial, sans-serif; 
         padding: 0 0 0 10px;
-        flex-direction: row-reverse; /* Pushes icon and label to the right */
-        justify-content: flex-start; /* Corrected to flex-start for right alignment in RTL */
+        flex-direction: row-reverse; 
+        justify-content: flex-end;
     }}
     .dhivehi-section .icon {{ 
         margin-right: 0; 
@@ -457,11 +444,11 @@ HTML_GENERATOR = f"""
     <div class="datetime-group">
         <div class="input-item">
             <label for="date-input">Date</label>
-            <input type="date" id="date-input" value="2025-12-14"> 
+            <input type="date" id="date-input" value="2025-12-14" onchange="updatePost()">
         </div>
         <div class="input-item">
             <label for="time-select">Valid Until Time (hrs)</label>
-            <select id="time-select">
+            <select id="time-select" onchange="updatePost()">
             </select>
         </div>
         <div class="input-item">
@@ -531,6 +518,7 @@ HTML_GENERATOR = f"""
             
             <div class="section-top-header dhivehi-block-header">
                 <h2 class="dhivehi-header-title" id="dv-header-title"></h2>
+                <p class="dhivehi-header-date" id="dv-header-date"></p>
             </div>
             
             <div class="advisory-section red-advisory-style" id="adv-dv-section">
@@ -547,6 +535,7 @@ HTML_GENERATOR = f"""
             <div class="en-content-wrapper"> 
                 <div class="section-top-header english-block-header">
                     <h2 class="english-header-title" id="en-header-title"></h2>
+                    <p class="english-header-date" id="en-header-date"></p>
                 </div>
 
                 <div class="advisory-section red-advisory-style" id="adv-en-section">
@@ -634,8 +623,7 @@ HTML_GENERATOR = f"""
 
         let line = '';
         if (!isContentEmpty || id !== 'adv') {{ 
-            // CRITICAL FIX: Add 'forecast-line' class to advisory paragraphs as well
-            line = `<p class="forecast-line">`; 
+            line = `<p class="forecast-line">`;
             
             if (lang === 'en') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
@@ -680,10 +668,14 @@ HTML_GENERATOR = f"""
     }}
 
     function updatePost() {{
+        const dateInputEl = document.getElementById('date-input');
+        const timeInputEl = document.getElementById('time-select');
         const periodEl = document.getElementById('forecast-period');
         
-        if (!periodEl) return; 
+        if (!dateInputEl || !timeInputEl || !periodEl) return; 
 
+        const dateInput = dateInputEl.value;
+        const timeInput = timeInputEl.value;
         const period = periodEl.value;
 
         let enHeader, dvHeader;
@@ -694,10 +686,24 @@ HTML_GENERATOR = f"""
             enHeader = "TONIGHT'S WEATHER";
             dvHeader = "މިރޭގެ މޫސުން";
         }}
+
+        const dateParts = dateInput.split('-');
+        const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        const day = date.getDate();
+        const monthIndex = date.getMonth();
+        const monthEn = getMonthName(monthIndex);
+        const monthDv = getDhivehiMonthName(monthIndex);
+        const year = date.getFullYear();
+        const time = timeInput ? timeInput.replace(':', '') : '0000';
+        const suffix = getDaySuffix(day);
+
+        const forecastDateEn = `Valid until ${{time}} hrs, ${{day}}${{suffix}} ${{monthEn}} ${{year}}`;
+        const forecastDateDv = `${{year}} ${{monthDv}} ${{day}} ވަނަ ދުވަހުގެ ${{time}} އާ ހަމައަށް`;
         
-        // Removed Date/Time logic as per request
         document.getElementById('dv-header-title').textContent = dvHeader;
+        document.getElementById('dv-header-date').textContent = forecastDateDv;
         document.getElementById('en-header-title').textContent = enHeader;
+        document.getElementById('en-header-date').textContent = forecastDateEn;
 
         // Use the new updateForecastItem function with icons/dividers
         updateForecastItem('en', 'adv', 'Advisory', document.getElementById('adv-en').value);
