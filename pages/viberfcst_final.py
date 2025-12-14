@@ -22,12 +22,13 @@ def get_asset_base64_uri(path):
     MISSING_IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
     
     if not os.path.exists(path):
+        # We will assume you already fixed the file paths in the previous step, 
+        # but keep the error messages here for robustness.
         st.error(f"❌ Error: Required file not found at path: **{path}**")
         
-        # If it's an image, return a placeholder. If it's a font, return None to let CSS use a default.
         if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
             return MISSING_IMAGE_PLACEHOLDER
-        return None # Graceful fallback for missing fonts
+        return None
 
     try:
         with open(path, "rb") as file:
@@ -54,15 +55,14 @@ MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
 
 # --- Check for critical asset errors before rendering HTML ---
-# The check now explicitly references the file name shown in the GitHub structure
 MISSING_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
 
+# We remove the st.stop() based on the assumption that the file path issue is resolved
 if EMBLEM_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found. Please ensure it is in the correct directory ({ASSET_DIR}/). Stopping execution.")
-    st.stop()
+    st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found. Please ensure it is in the correct directory ({ASSET_DIR}/).")
      
 if MAP_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found and a placeholder is being used. Please upload the map image to the correct location.")
+    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found and a placeholder is being used.")
     
 if FARUMA_FONT_URI is None:
     st.warning(f"⚠️ **Warning**: The font file **{FARUMA_FONT}** was not found. Dhivehi text may not display correctly.")
@@ -76,21 +76,21 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🚀 AGGRESSIVE TOP-SPACE REMOVAL: Uses negative margin to pull content up.
+# 🚀 CSS FIX: Revert header hiding, only adjust padding/margin for content flow.
 st.markdown("""
     <style>
-    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON */
-    .stApp header {
-        display: none;
-    }
+    /* 🛑 REMOVED: .stApp header { display: none; } */
     
     /* Targets the main content block container */
     .block-container {
         padding-top: 0rem; /* Remove default top padding */
-        margin-top: -50px; /* Pull the content aggressively up into the default header area */
+        /* Adjusted margin: Now less aggressive to accommodate the visible header */
+        margin-top: -20px; 
         max-width: 100%; /* Ensure wide layout is respected */
     }
+    
     /* Targets the inner block that contains the components to pull it up */
+    /* st.markdown titles (like the one below) have a class that adds padding. Let's adjust it. */
     .css-1r6bpt { 
         padding-top: 0; 
     }
@@ -119,6 +119,8 @@ mvlhohi_font_css = f"""
 
 
 # Define the massive HTML/CSS/JS block using f-string and triple quotes
+# Note: The rest of the HTML block (everything after the CSS in the <style> tag) 
+# remains exactly the same as the last working version to avoid reintroducing errors.
 HTML_GENERATOR = f"""
 <!DOCTYPE html>
 <html lang="en">
