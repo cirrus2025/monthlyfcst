@@ -224,7 +224,7 @@ HTML_GENERATOR = f"""
         border-radius: 8px; 
         /* FIXED: Remove margins and set padding to 1px vertically to extend the bar width */
         margin: 5px 0 5px 0; 
-        padding: 1px 0; /* Remove internal padding on the bar itself */
+        padding: 1px 15px; /* CRITICAL FIX: Add horizontal padding here to provide space for the icon */
         display: none; 
         overflow: hidden; 
     }}
@@ -249,16 +249,30 @@ HTML_GENERATOR = f"""
         line-height: 1.4em;
         display: block; 
         width: 100%;
-        /* ADDED: Internal padding to align with the rest of the text content */
-        padding: 0 10px 0 15px; 
+        /* REMOVED: Internal padding that conflicts with the section padding */
+        padding: 0;
     }}
     
-    .advisory-en p {{ text-align: left; }}
+    .advisory-en p {{ 
+        /* FIXED: Added .forecast-line properties to advisory p tags */
+        display: flex; 
+        align-items: center;
+        text-align: left;
+        direction: ltr;
+        font-family: Arial, sans-serif;
+    }}
 
     .advisory-dv p {{
+        /* FIXED: Added .forecast-line properties to advisory p tags */
+        display: flex; 
+        align-items: center;
+        /* FIXED: Explicitly set RTL direction and alignment for Dhivehi advisory text */
         direction: rtl;
         text-align: right;
         font-family: 'Faruma', Arial, sans-serif;
+        /* ADDED: Use row-reverse to correctly position flex items (icon/heading/text) for RTL */
+        flex-direction: row-reverse; 
+        justify-content: flex-end; /* Pushes content to the right edge */
     }}
 
     /* --- FORECAST SECTIONS --- */
@@ -623,7 +637,8 @@ HTML_GENERATOR = f"""
 
         let line = '';
         if (!isContentEmpty || id !== 'adv') {{ 
-            line = `<p class="forecast-line">`;
+            // CRITICAL FIX: Add 'forecast-line' class to advisory paragraphs as well
+            line = `<p class="forecast-line">`; 
             
             if (lang === 'en') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
