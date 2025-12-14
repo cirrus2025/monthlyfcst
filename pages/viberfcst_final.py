@@ -545,7 +545,7 @@ HTML_GENERATOR = f"""
             }} else if (lang === 'dv') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
                 let dvHeadingText;
-                if (id === 'adv') dvHeadingText = ' އިރުޝާދު:'
+                if (id === 'adv') dvHeadingText = ' ސަމާލު:'
                 else if (id === 'wx') dvHeadingText = 'މޫސުން:'
                 else if (id === 'wind') dvHeadingText = 'ވައި: '
                 else if (id === 'sea') dvHeadingText = 'ކަނޑު:'
@@ -727,3 +727,4 @@ components.html(
     height=1600,
     scrolling=True
 )
+
