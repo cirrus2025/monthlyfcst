@@ -75,7 +75,7 @@ st.set_page_config(
 # 🚀 CSS FIX: Hiding the Streamlit Header and Menu and aggressively reducing top margin.
 st.markdown("""
     <style>
-    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON (as requested) */
+    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON */
     .stApp header {
         display: none;
     }
@@ -721,9 +721,7 @@ HTML_GENERATOR = f"""
 
 # --- 3. STREAMLIT RENDERING ---
 
-st.markdown("<h2 style='text-align:center; color: #004d99;'>📱 Viber / Social Media Post Generator</h2>", unsafe_allow_html=True)
-
-# Render the entire HTML/CSS/JS generator
+# RENDER THE ENTIRE HTML/CSS/JS GENERATOR
 components.html(
     HTML_GENERATOR,
     height=1600,
