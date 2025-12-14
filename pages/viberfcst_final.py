@@ -15,9 +15,9 @@ MVLHOHI_FONT = os.path.join(ASSET_DIR, "Mvlhohi bold.ttf")
 
 # --- NEW ICON ASSETS ---
 # NOTE: Please ensure these exact files are in your 'pages/' directory.
-VIBER_ICON_PATH = os.path.join(ASSET_DIR, "viber_icon.png")
-X_ICON_PATH = os.path.join(ASSET_DIR, "x_icon.png") 
-FACEBOOK_ICON_PATH = os.path.join(ASSET_DIR, "facebook_icon.png")
+VIBER_ICON_PATH = os.path.join(ASSET_DIR, "viber.jpg")
+X_ICON_PATH = os.path.join(ASSET_DIR, "x.jpg") 
+FACEBOOK_ICON_PATH = os.path.join(ASSET_DIR, "fb.jpg")
 
 
 def get_asset_base64_uri(path):
@@ -754,3 +754,4 @@ components.html(
     height=1600,
     scrolling=True
 )
+
