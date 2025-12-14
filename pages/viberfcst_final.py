@@ -5,13 +5,19 @@ import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 
-# Assets are assumed to be in the 'pages/' subdirectory based on your GitHub structure.
+# Assets are assumed to be in the 'pages/' subdirectory based on your structure.
 ASSET_DIR = "pages"
 
 EMBLEM_FILE_PATH = os.path.join(ASSET_DIR, "emblem.png")
 MAP_FILE_PATH = os.path.join(ASSET_DIR, "maldives_map.jpg")
 FARUMA_FONT = os.path.join(ASSET_DIR, "Faruma.ttf")
 MVLHOHI_FONT = os.path.join(ASSET_DIR, "Mvlhohi bold.ttf")
+
+# --- NEW ICON ASSETS ---
+# NOTE: Please ensure these exact files are in your 'pages/' directory.
+VIBER_ICON_PATH = os.path.join(ASSET_DIR, "viber_icon.png")
+X_ICON_PATH = os.path.join(ASSET_DIR, "x_icon.png") 
+FACEBOOK_ICON_PATH = os.path.join(ASSET_DIR, "facebook_icon.png")
 
 
 def get_asset_base64_uri(path):
@@ -50,20 +56,30 @@ EMBLEM_IMAGE_DATA_URI = get_asset_base64_uri(EMBLEM_FILE_PATH)
 FARUMA_FONT_URI = get_asset_base64_uri(FARUMA_FONT)
 MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 
+# Convert NEW icons to Base64
+VIBER_ICON_URI = get_asset_base64_uri(VIBER_ICON_PATH)
+X_ICON_URI = get_asset_base64_uri(X_ICON_PATH)
+FACEBOOK_ICON_URI = get_asset_base64_uri(FACEBOOK_ICON_PATH)
+
 
 # --- Check for critical asset errors before rendering HTML ---
 MISSING_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
 
 if EMBLEM_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found. Please ensure it is in the correct directory ({ASSET_DIR}/).")
+    st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found.")
      
 if MAP_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
-    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found and a placeholder is being used.")
+    st.warning(f"⚠️ **Warning**: The map file **{MAP_FILE_PATH}** was not found.")
     
 if FARUMA_FONT_URI is None:
-    st.warning(f"⚠️ **Warning**: The font file **{FARUMA_FONT}** was not found. Dhivehi text may not display correctly.")
+    st.warning(f"⚠️ **Warning**: The font file **{FARUMA_FONT}** was not found.")
 if MVLHOHI_FONT_URI is None:
-    st.warning(f"⚠️ **Warning**: The font file **{MVLHOHI_FONT}** was not found. Header text may not display correctly.")
+    st.warning(f"⚠️ **Warning**: The font file **{MVLHOHI_FONT}** was not found.")
+    
+# Icon check (for information only)
+if VIBER_ICON_URI == MISSING_PLACEHOLDER or X_ICON_URI == MISSING_PLACEHOLDER or FACEBOOK_ICON_URI == MISSING_PLACEHOLDER:
+     st.warning(f"⚠️ **Warning**: One or more social media icon files were not found (e.g., {VIBER_ICON_PATH}). Check your `pages/` directory.")
+
 
 # --- 1. PAGE CONFIG and STYLING ---
 st.set_page_config(
@@ -313,7 +329,7 @@ HTML_GENERATOR = f"""
     .english-section {{ padding-top: 5px; }}
     
     /* ========================================
-    *** FOOTER STYLES ***
+    *** FOOTER STYLES (MODIFIED) ***
     ======================================== */
     .footer {{
         display: flex; align-items: center; justify-content: space-between; 
@@ -338,17 +354,33 @@ HTML_GENERATOR = f"""
     }}
     .footer-center img {{ height: 28px; width: auto; }}
     
-    /* MODIFIED: Right footer content is now just the text, aligned right */
     .footer-right {{
         display: flex; 
         align-items: center; 
+        gap: 10px; /* Space between text and icons */
         font-family: 'Faruma', Arial, sans-serif; 
         color: #004d99; 
         white-space: nowrap; 
         font-size: 13px; 
         padding-right: 0; 
         justify-content: flex-end; /* Push content to the right edge */
-        flex-grow: 1; /* Allow it to take up available space */
+    }}
+    
+    .social-icons {{ 
+        display: flex; 
+        gap: 4px; 
+        padding-left: 10px; /* Space between Dhivehi text and icons */
+    }}
+    
+    /* Styling for the social icon images */
+    .social-icons img {{
+        width: 20px; /* Size of the icons */
+        height: 20px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+    }}
+    .icon-link:hover img {{ 
+        opacity: 0.8; 
     }}
 
 </style>
@@ -478,6 +510,17 @@ HTML_GENERATOR = f"""
 
             <div class="footer-right">
                 މޯލްޑިވްސް މީޓިއޮރޮލޮޖިކަލް ސަރވިސް
+                <div class="social-icons">
+                    <a href="#" target="_blank" class="icon-link" title="Viber">
+                        <img src="{VIBER_ICON_URI}" alt="Viber" crossorigin="anonymous">
+                    </a>
+                    <a href="#" target="_blank" class="icon-link" title="X (Twitter)">
+                         <img src="{X_ICON_URI}" alt="X" crossorigin="anonymous">
+                    </a>
+                    <a href="#" target="_blank" class="icon-link" title="Facebook">
+                         <img src="{FACEBOOK_ICON_URI}" alt="Facebook" crossorigin="anonymous">
+                    </a>
+                </div>
             </div>
         </footer>
     </div>
