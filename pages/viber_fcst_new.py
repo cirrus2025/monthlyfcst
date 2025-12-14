@@ -105,8 +105,6 @@ if FARUMA_FONT_URI is None or MVLHOHI_FONT_URI is None:
      st.warning("⚠️ Font files not found. The display may use default fonts.")
      
 # --- Conditional Font Loading ---
-# NOTE: The f-string must escape the curly braces for CSS properties and selectors.
-# I've reviewed and ensured proper escaping where necessary.
 faruma_font_css = f"""
     @font-face {{
         font-family: 'Faruma';
@@ -225,8 +223,8 @@ HTML_GENERATOR = f"""
         background-color: #fffde7; 
         border-radius: 8px; 
         margin: 5px 10px 5px 20px; 
-        /* FIXED: Reduced vertical padding to hug text closer (text height width) */
-        padding: 3px 15px; 
+        /* FIXED: Reduced vertical padding to 1px for minimum height */
+        padding: 1px 15px; 
         display: none; 
         overflow: hidden; 
     }}
