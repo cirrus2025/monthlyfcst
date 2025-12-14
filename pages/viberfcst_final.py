@@ -6,8 +6,11 @@ import os
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 # ⚠️ IMPORTANT: ASSUMING THESE FILES ARE IN THE SAME DIRECTORY AS THIS SCRIPT.
 MAP_FILE_PATH = "maldives_map.jpg"
-FARUMA_FONT = "Faruma.ttf"
-MVLHOHI_FONT = "Mvlhohi bold.ttf"
+EMBLEM_FILE_PATH = "emblem.png"
+
+# Assuming fonts are in a subdirectory called 'static/fonts/' relative to where the script is run
+FARUMA_FONT = "static/fonts/Faruma.ttf"
+MVLHOHI_FONT = "static/fonts/Mvlhohi bold.ttf"
 
 
 def get_asset_base64_uri(path):
@@ -702,7 +705,3 @@ components.html(
     height=1600,
     scrolling=True
 )
-
-
-
-
