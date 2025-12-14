@@ -6,7 +6,7 @@ import os
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 # ⚠️ IMPORTANT: ASSUMING THESE FILES ARE IN THE SAME DIRECTORY AS THIS SCRIPT.
 MAP_FILE_PATH = "maldives_map.jpg"
-EMBLEM_FILE_PATH = "emblem.jpg"
+EMBLEM_FILE_PATH = "emblem.png"
 FARUMA_FONT = "Faruma.ttf"
 MVLHOHI_FONT = "Mvlhohi bold.ttf"
 
@@ -703,5 +703,6 @@ components.html(
     height=1600,
     scrolling=True
 )
+
 
 
