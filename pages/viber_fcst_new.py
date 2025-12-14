@@ -796,3 +796,12 @@ HTML_GENERATOR = f"""
 </body>
 </html>
 """
+
+# --- 3. STREAMLIT RENDERING ---
+
+# Render the entire HTML/CSS/JS generator
+components.html(
+    HTML_GENERATOR,
+    height=1600,
+    scrolling=True
+)
