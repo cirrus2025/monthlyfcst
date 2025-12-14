@@ -1,6 +1,6 @@
 # pages/Temperature_Outlook.py
 
-import streamlit as st
+import streamlit as st # <--- Streamlit imported first
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import box
@@ -10,6 +10,18 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import io
 import warnings
 import os
+
+# --- HIDES THE STREAMLIT HEADER/MENU ICONS (Applied here) ---
+hide_streamlit_header_css = """
+<style>
+.stApp header {
+    display: none;
+}
+</style>
+"""
+st.markdown(hide_streamlit_header_css, unsafe_allow_html=True)
+# ------------------------------------------------------------
+
 
 st.title("🌡️ Temperature Outlook Map Generator")
 st.markdown("Use the sidebar to adjust the probabilities for each Atoll.")
@@ -118,8 +130,8 @@ with st.spinner('Generating map...'):
 
     def make_cb(ax, cmap, title, offset):
         cax = inset_axes(ax, width=width, height=height, loc='lower left',
-                            bbox_to_anchor=(start_x, start_y + offset, 1, 1),
-                            bbox_transform=ax.transAxes, borderpad=0)
+                          bbox_to_anchor=(start_x, start_y + offset, 1, 1),
+                          bbox_transform=ax.transAxes, borderpad=0)
         cb = colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, boundaries=bins,
                                     ticks=tick_positions, spacing='uniform', orientation='horizontal')
         cb.set_ticklabels(tick_labels)
