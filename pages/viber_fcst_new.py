@@ -254,12 +254,18 @@ HTML_GENERATOR = f"""
     }}
     
     .advisory-en p {{ 
+        /* FIXED: Added .forecast-line properties to advisory p tags */
+        display: flex; 
+        align-items: center;
         text-align: left;
         direction: ltr;
         font-family: Arial, sans-serif;
     }}
 
     .advisory-dv p {{
+        /* FIXED: Added .forecast-line properties to advisory p tags */
+        display: flex; 
+        align-items: center;
         /* FIXED: Explicitly set RTL direction and alignment for Dhivehi advisory text */
         direction: rtl;
         text-align: right;
@@ -631,7 +637,8 @@ HTML_GENERATOR = f"""
 
         let line = '';
         if (!isContentEmpty || id !== 'adv') {{ 
-            line = `<p class="forecast-line">`;
+            // CRITICAL FIX: Add 'forecast-line' class to advisory paragraphs as well
+            line = `<p class="forecast-line">`; 
             
             if (lang === 'en') {{
                 let color = id === 'adv' ? 'white' : '#004d99'; 
