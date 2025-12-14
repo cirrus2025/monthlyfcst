@@ -7,8 +7,7 @@ import os
 # ⚠️ IMPORTANT: Ensure these files exist in the same directory as this script,
 # or adjust the paths accordingly.
 MAP_FILE_PATH = "maldives_map.jpg"
-# CORRECTED PATH: Using the uploaded emblem file name
-EMBLEM_FILE_PATH = "image_7b055b.png" 
+EMBLEM_FILE_PATH = "emblem.png"
 
 # Font paths (assuming they exist in the specified subfolder 'static/fonts/')
 # Ensure these files are present to avoid errors.
@@ -632,9 +631,8 @@ HTML_GENERATOR = f"""
     function downloadPost() {{
         const element = document.getElementById('weather-post');
         if (!element) {{
-             // Use console.error instead of alert
-             console.error("❌ Preview element not found. Please try refreshing the page.");
-             return;
+              alert("❌ Preview element not found. Please try refreshing the page.");
+              return;
         }}
 
         // Ensure the height is correct before capturing
@@ -659,12 +657,7 @@ HTML_GENERATOR = f"""
         }}).catch(err => {{
             console.error("Image generation failed:", err);
             // WARNING for the user
-            // Use a custom message display instead of alert
-            const errorBox = document.createElement('div');
-            errorBox.style.cssText = "position: fixed; top: 10px; right: 10px; background: #f8d7da; color: #721c24; padding: 10px; border: 1px solid #f5c6cb; border-radius: 5px; z-index: 1000;";
-            errorBox.textContent = "❌ Download Failed! If the preview looks fine, try updating the preview first, then downloading. If assets are missing, check the browser console for errors.";
-            document.body.appendChild(errorBox);
-            setTimeout(() => document.body.removeChild(errorBox), 5000);
+            alert("❌ Download Failed! If the preview looks fine, try updating the preview first, then downloading. If assets are missing, check the console errors.");
         }});
     }}
 
@@ -705,5 +698,4 @@ components.html(
     HTML_GENERATOR,
     height=1600,
     scrolling=True
-
 )
