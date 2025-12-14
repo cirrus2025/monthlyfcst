@@ -6,14 +6,14 @@ import os
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 
 # ✅ FIX: Updated to the user-uploaded file name for the Emblem
-EMBLEM_FILE_PATH = "emblem.png"
+EMBLEM_FILE_PATH = "emblem.png.png"
 
 # ⚠️ WARNING: This file is still missing. We will use a placeholder if not found.
-MAP_FILE_PATH = "maldives_map.jpg"
+MAP_FILE_PATH = "maldives_map.jpg.jpg"
 
 # ✅ FIX: Updated to assume fonts are in the SAME directory as the script.
-FARUMA_FONT = "Faruma.ttf"
-MVLHOHI_FONT = "Mvlhohi bold.ttf"
+FARUMA_FONT = "Faruma.ttf.ttf"
+MVLHOHI_FONT = "Mvlhohi bold.ttf.ttf"
 
 
 def get_asset_base64_uri(path):
@@ -730,4 +730,5 @@ components.html(
     height=1600,
     scrolling=True
 )
+
 
