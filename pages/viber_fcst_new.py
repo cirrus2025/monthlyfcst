@@ -253,9 +253,14 @@ HTML_GENERATOR = f"""
         padding: 0 10px 0 15px; 
     }}
     
-    .advisory-en p {{ text-align: left; }}
+    .advisory-en p {{ 
+        text-align: left;
+        direction: ltr;
+        font-family: Arial, sans-serif;
+    }}
 
     .advisory-dv p {{
+        /* FIXED: Explicitly set RTL direction and alignment for Dhivehi advisory text */
         direction: rtl;
         text-align: right;
         font-family: 'Faruma', Arial, sans-serif;
@@ -791,12 +796,3 @@ HTML_GENERATOR = f"""
 </body>
 </html>
 """
-
-# --- 3. STREAMLIT RENDERING ---
-
-# Render the entire HTML/CSS/JS generator
-components.html(
-    HTML_GENERATOR,
-    height=1600,
-    scrolling=True
-)
