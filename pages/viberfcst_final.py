@@ -49,9 +49,14 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🚀 AGGRESSIVE TOP-SPACE REMOVAL: Uses negative margin to pull content up.
+# 🚀 AGGRESSIVE TOP-SPACE REMOVAL AND HEADER HIDING COMBINED
 st.markdown("""
     <style>
+    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON (New addition) */
+    .stApp header {
+        display: none;
+    }
+    
     /* Targets the main content block container */
     .block-container {
         padding-top: 0rem; /* Remove default top padding */
