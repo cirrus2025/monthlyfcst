@@ -5,10 +5,9 @@ import os
 
 # --- 0. FILE PATHS AND BASE64 CONVERSION ---
 
-# ✅ FIX: All assets are in the 'pages/' subdirectory, as shown in the file structure.
+# Assets are assumed to be in the 'pages/' subdirectory based on your GitHub structure.
 ASSET_DIR = "pages"
 
-# ✅ FIX: Use the file names shown in the GitHub structure, prefixed with the directory.
 EMBLEM_FILE_PATH = os.path.join(ASSET_DIR, "emblem.png")
 MAP_FILE_PATH = os.path.join(ASSET_DIR, "maldives_map.jpg")
 FARUMA_FONT = os.path.join(ASSET_DIR, "Faruma.ttf")
@@ -22,8 +21,6 @@ def get_asset_base64_uri(path):
     MISSING_IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
     
     if not os.path.exists(path):
-        # We will assume you already fixed the file paths in the previous step, 
-        # but keep the error messages here for robustness.
         st.error(f"❌ Error: Required file not found at path: **{path}**")
         
         if path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
@@ -57,7 +54,6 @@ MVLHOHI_FONT_URI = get_asset_base64_uri(MVLHOHI_FONT)
 # --- Check for critical asset errors before rendering HTML ---
 MISSING_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABVJREFUGFdj/M/AAzJgYmJiZgAARwIAG0QG4tF+FzYAAAAASUVORK5CYII="
 
-# We remove the st.stop() based on the assumption that the file path issue is resolved
 if EMBLEM_IMAGE_DATA_URI == MISSING_PLACEHOLDER:
     st.error(f"🛑 The Emblem file **{EMBLEM_FILE_PATH}** was not found. Please ensure it is in the correct directory ({ASSET_DIR}/).")
      
@@ -76,21 +72,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🚀 CSS FIX: Revert header hiding, only adjust padding/margin for content flow.
+# 🚀 CSS FIX: Hiding the Streamlit Header and Menu and aggressively reducing top margin.
 st.markdown("""
     <style>
-    /* 🛑 REMOVED: .stApp header { display: none; } */
+    /* HIDES THE STREAMLIT HEADER AND MENU BUTTON (as requested) */
+    .stApp header {
+        display: none;
+    }
     
     /* Targets the main content block container */
     .block-container {
         padding-top: 0rem; /* Remove default top padding */
-        /* Adjusted margin: Now less aggressive to accommodate the visible header */
-        margin-top: -20px; 
+        /* Pull the content aggressively up into the default header area */
+        margin-top: -50px; 
         max-width: 100%; /* Ensure wide layout is respected */
     }
-    
     /* Targets the inner block that contains the components to pull it up */
-    /* st.markdown titles (like the one below) have a class that adds padding. Let's adjust it. */
     .css-1r6bpt { 
         padding-top: 0; 
     }
@@ -119,8 +116,6 @@ mvlhohi_font_css = f"""
 
 
 # Define the massive HTML/CSS/JS block using f-string and triple quotes
-# Note: The rest of the HTML block (everything after the CSS in the <style> tag) 
-# remains exactly the same as the last working version to avoid reintroducing errors.
 HTML_GENERATOR = f"""
 <!DOCTYPE html>
 <html lang="en">
